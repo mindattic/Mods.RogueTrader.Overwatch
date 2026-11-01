@@ -1,6 +1,6 @@
 ---
 codex: 1
-project: RogueTrader.Overwatch
+project: Mods.RogueTrader.Overwatch
 code: RTO
 layer: stories
 status: living
@@ -8,7 +8,7 @@ updated: 2026-10-26
 ---
 <!-- GENERATED from MindAttic.Tickets/data/Tickets.db by `tickets db render`. Do not edit: this file is rewritten from the database; change stories and tickets with the tickets CLI. -->
 
-# RogueTrader.Overwatch — User Stories
+# Mods.RogueTrader.Overwatch — User Stories
 > ✅ done (shipped & tested) · 🟡 partial · ⬜ planned. Every ✅ cites the test.
 
 ## Priority backlog
@@ -120,3 +120,4 @@ _Nothing recorded yet._
 | RTO-T97 | 2026-10-30 | fix | closed | Bughunt: exhaustive sweep after the Reflex Shot retained-aim rework (RTO-T96); fix every confirmed bug | docs/DESIGN.md, src/RogueTrader.Overwatch/Suppression.cs: fixed two stale comments claiming Reflex Shot's hit chance still shows a named breakdown line; no code-logic bugs found in the RTO-T96 rework on re-review |
 | RTO-T98 | 2026-10-31 | chore | closed | Bump to 4.0.0: version manifest, README Status/changelog, Nexus page version/changelog/description/checklist, matching the mechanics shipped since 3.0.0 (T93, T94, T96) | mod/OwlcatModificationManifest.json, README.md, docs/NEXUS_PAGE.md: version 4.0.0, fresh changelog for T93/T94/T96, fixed stale checklist/BBCode lines claiming Reflex Shot isn't an attack of opportunity or still uses a flat 33 base |
 | RTO-T99 | 2026-10-31 | chore | closed | Add 20261029174655_1.jpg, 20261029174700_1.jpg, 20261029174711_1.jpg, 20261029174715_1.jpg, 20261029174836_1.jpg, 20261029174845_1.jpg, 20261029174849_1.jpg | — |
+| RTO-T100 | 2026-11-01 | chore | open | Rename repo to Mods.RogueTrader.Overwatch for mod organization (GitHub + folder + refs) | — |
