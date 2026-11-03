@@ -9,6 +9,7 @@ using Kingmaker.EntitySystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Pathfinding;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Parts;
 using UnityEngine;
@@ -61,7 +62,9 @@ internal static class OverwatchDebuff
     // Overwatch shots queued but not yet rolled, by (shooter, target) UniqueId: one overwatcher can queue shots at
     // two enemies in the same tick before either rolls. An additive hit-chance modifier, unlike Reflex Shot's own
     // multiplicative retained-aim fraction (RTO-T96): the cone's snap-shot penalty isn't a turn-angle effect.
-    public static readonly Dictionary<(string Shooter, string Target), (int Modifier, EntityFact Source, float At)> Pending = new();
+    // Shot is the ability the shot fires (Abilities_AttackOfOpportunity's per-shot clone), so every round of a burst
+    // gets the penalty and no other attack by the shooter does; null when unknown, and then the first roll uses it up.
+    public static readonly Dictionary<(string Shooter, string Target), (int Modifier, EntityFact Source, float At, AbilityData Shot)> Pending = new();
 }
 
 [HarmonyPatch(typeof(OverwatchController), nameof(OverwatchController.Tick))]
@@ -141,9 +144,15 @@ internal static class OverwatchDebuff_AimModifier
             var key = (shooter.UniqueId, target.UniqueId);
             if (!OverwatchDebuff.Pending.TryGetValue(key, out var shot))
                 return;
-            OverwatchDebuff.Pending.Remove(key);
             if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null || shot.Modifier == 0)
+            {
+                OverwatchDebuff.Pending.Remove(key);
                 return;
+            }
+            if (shot.Shot != null && __instance.Ability != shot.Shot)
+                return;
+            if (shot.Shot == null)
+                OverwatchDebuff.Pending.Remove(key);
             __instance.HitChanceRule.HitChanceValueModifiers.Add(shot.Modifier, shot.Source);
         }
         catch (Exception ex)

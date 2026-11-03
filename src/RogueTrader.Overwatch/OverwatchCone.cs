@@ -179,7 +179,8 @@ internal static class OverwatchCone_ChooseShots
             // The reach penalty, captured now: the last shot stops the overwatch before its attack rolls.
             int penalty = OverwatchDebuff.PenaltyOf(owner, __instance);
             if (penalty > 0 && __instance.Ability?.Fact != null)
-                OverwatchDebuff.Pending[(owner.UniqueId, target.UniqueId)] = (-penalty, __instance.Ability.Fact, Time.time);
+                OverwatchDebuff.Pending[(owner.UniqueId, target.UniqueId)] = (-penalty, __instance.Ability.Fact, Time.time,
+                    __instance.AbilityOnTrigger is { IsAttackOfOpportunity: true } shotAbility ? shotAbility : null);
             // The attack-of-opportunity flagging and reaction-budget gate (RTO-T85, T94) run ahead of this prefix
             // in Abilities_AttackOfOpportunity, which also owns the trigger-ability clone swap.
             __state = true;

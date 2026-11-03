@@ -107,13 +107,17 @@ internal static class ReflexShot
         public readonly float Fraction;
         public readonly EntityFact Source;
         public readonly float At;
+        // The ability the shot actually fires (Abilities_AttackOfOpportunity's per-shot clone): every round of that
+        // one attack rolls with it, any later attack by the shooter with another instance.
+        public readonly AbilityData Shot;
 
-        public PendingShot(string targetId, float fraction, EntityFact source, float at)
+        public PendingShot(string targetId, float fraction, EntityFact source, float at, AbilityData shot)
         {
             TargetId = targetId;
             Fraction = fraction;
             Source = source;
             At = at;
+            Shot = shot;
         }
     }
 
@@ -169,7 +173,11 @@ internal static class ReflexShot_RecordTurn
             if (facing == null)
                 return;
             float fraction = ReflexShot.RetainedFractionFor(shooter, facing.Point, target.Position);
-            ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, fraction, __instance.Ability.Fact, Time.time);
+            // AbilityOnTrigger is already the per-shot clone here (Abilities_AttackOfOpportunity's prefix runs first);
+            // never the shared weapon attack the shooter also fires its normal shots with.
+            var trigger = __instance.AbilityOnTrigger;
+            var shot = trigger is { IsAttackOfOpportunity: true } ? trigger : null;
+            ReflexShot.Pending[shooter.UniqueId] = new ReflexShot.PendingShot(target.UniqueId, fraction, __instance.Ability.Fact, Time.time, shot);
         }
         catch (Exception ex)
         {
@@ -193,11 +201,18 @@ internal static class ReflexShot_AimModifier
                 return;
             if (!ReflexShot.Pending.TryGetValue(shooter.UniqueId, out var shot) || shot.TargetId != target.UniqueId)
                 return;
-            // Consumed here, win or lose: a Reflex Shot fires once (HitOnce), so nothing should reuse this entry,
-            // and a later unrelated attack at the same target must not inherit its retained-aim fraction or damage cut.
-            ReflexShot.Pending.Remove(shooter.UniqueId);
             if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null)
+            {
+                ReflexShot.Pending.Remove(shooter.UniqueId);
                 return;
+            }
+            // Every round of the Reflex Shot's own attack gets it (a burst rolls once per round, RTO-T82), but no other
+            // attack does: a later unrelated attack at the same target fires a different AbilityData (RTO-T73). Without
+            // a recorded shot ability, the entry is used up by this first roll instead.
+            if (shot.Shot != null && __instance.Ability != shot.Shot)
+                return;
+            if (shot.Shot == null)
+                ReflexShot.Pending.Remove(shooter.UniqueId);
             ReflexShot.Mark(__instance, shot.Source, shot.Fraction);
             ReflexShot.Mark(__instance.HitChanceRule, shot.Source, shot.Fraction);
         }
