@@ -1,0 +1,2 @@
+Keeps this folder non-empty so file-based mod managers (e.g. Vortex) deploy it: the
+game's loader throws before loading any blueprint when Bundles/ doesn't exist (RTO-T22, RTO-T104).
