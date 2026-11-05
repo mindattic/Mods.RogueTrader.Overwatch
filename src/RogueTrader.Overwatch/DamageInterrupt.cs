@@ -8,9 +8,10 @@ using Kingmaker.UnitLogic.Parts;
 
 namespace RogueTraderOverwatch;
 
-// Taking any real damage breaks a unit's concentration: its Overwatch or Reflex Shot stops, and every Suppressed it
-// put on someone is removed (which also clears the suppression line and cosmetic fire). Fake damage (previews) and
-// zero-damage hits don't count.
+// Taking any real damage breaks a unit's concentration: its Overwatch stops, and every Suppressed it put on
+// someone is removed (which also clears the suppression line and cosmetic fire). Reflex Shot fires at once on
+// cast (RTO-T111) and has no armed window left to interrupt. Fake damage (previews) and zero-damage hits don't
+// count.
 [HarmonyPatch(typeof(RuleDealDamage), nameof(RuleDealDamage.OnTrigger))]
 internal static class DamageInterrupt
 {
@@ -22,7 +23,7 @@ internal static class DamageInterrupt
                 return;
 
             var part = victim.GetOptional<PartOverwatch>();
-            if (part != null && !part.IsStopped && (OverwatchCone.IsOurs(part.Ability) || ReflexShot.IsOurs(part.Ability)))
+            if (part != null && !part.IsStopped && OverwatchCone.IsOurs(part.Ability))
                 part.Stop();
 
             foreach (var unit in Game.Instance.State.AllBaseAwakeUnits)

@@ -115,7 +115,6 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
         m_Pose.Clear();
         OverwatchCone.Watches.Clear();
         OverwatchCone.PendingShots.Clear();
-        ReflexShot.Pending.Clear();
         OverwatchDebuff.Pending.Clear();
     }
 
@@ -353,9 +352,8 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
 
 // Pinned down: a Suppressed unit's own ranged attacks keep HitChancePercent of their chance (RTO-T86, eased to 75% in
 // RTO-T87: a pin, not a disable, for an ability that can be a turn's last spare AP). The final, capped chance after
-// every modifier is scaled at the end of the game's ranged calculation, after Reflex Shot's own retained-aim scale
-// (RTO-T96) if both apply, so a very accurate shooter loses the same share as anyone. Melee and scatter attacks use
-// the game's border chance and are left alone.
+// every modifier is scaled at the end of the game's ranged calculation, so a very accurate shooter loses the same
+// share as anyone. Melee and scatter attacks use the game's border chance and are left alone.
 [HarmonyPatch(typeof(RuleCalculateHitChances), "OnTriggerRanged")]
 internal static class Suppression_ReduceHitChance
 {
@@ -371,7 +369,7 @@ internal static class Suppression_ReduceHitChance
             // Destructibles get the border chance from the game; leave that as it is.
             if (!__instance.Ability.IsBurstAttack && __instance.Target is DestructibleEntity)
                 return;
-            ReflexShot_BaseHitChance.SetRawResult(__instance, Mathf.RoundToInt(__instance.ResultHitChance * HitChancePercent / 100f));
+            ReflexShot.SetRawHitChance(__instance, Mathf.RoundToInt(__instance.ResultHitChance * HitChancePercent / 100f));
         }
         catch (Exception ex)
         {

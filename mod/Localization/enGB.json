@@ -4,7 +4,7 @@
       "Text": "Reflex Shot"
     },
     "1cd2d368-2fc5-4115-882f-e30948a597e4": {
-      "Text": "Ends the turn. Costs 1 AP. Pick the direction you expect the enemy from. Until the start of your next turn, make one quick reaction attack with your weapon against the first enemy that moves, is pushed or acts within your weapon's range, in any direction. Its hit chance is your own (distance, cover and talents still apply), scaled down by how far you have to swing to fire: all of it dead ahead, down to a tenth of it a quarter-turn away or more. It deals 33% of your weapon's damage. Taking damage before it fires cancels it."
+      "Text": "Ends the turn. Costs 1 AP. At once, fire one quick reaction shot with your weapon at a randomly chosen enemy within its range and line of sight - no aiming, whoever's out there might get hit. Your normal hit chance applies in full (distance, cover and talents still count). It deals 33% of your weapon's damage."
     },
     "f19fd306-a89b-4cac-ac04-909140672dc9": {
       "Text": "Overwatch"

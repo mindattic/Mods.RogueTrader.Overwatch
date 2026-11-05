@@ -24,6 +24,8 @@ internal static class OverwatchDebuff
 {
     public const string BuffGuid = "30f01920a70d4ec28860d0bd5e4193e3";
     public const int MinPenalty = 1;
+    // How long a queued shot's aim modifier (OverwatchDebuff_AimModifier) stays live waiting for its roll.
+    public const float PendingSeconds = 5f;
     // On top of the game's own range falloff (half the base chance past half range), so a long cone isn't hit twice
     // as hard (RTO-T87; was 30).
     public const int MaxPenalty = 15;
@@ -144,7 +146,7 @@ internal static class OverwatchDebuff_AimModifier
             var key = (shooter.UniqueId, target.UniqueId);
             if (!OverwatchDebuff.Pending.TryGetValue(key, out var shot))
                 return;
-            if (Time.time - shot.At > ReflexShot.PendingSeconds || shot.Source == null || shot.Modifier == 0)
+            if (Time.time - shot.At > OverwatchDebuff.PendingSeconds || shot.Source == null || shot.Modifier == 0)
             {
                 OverwatchDebuff.Pending.Remove(key);
                 return;

@@ -8,58 +8,60 @@
   the whole set sits at the end of row 2 by default (RTO-T112). Enemies get the first three on any
   ranged weapon (Category Pistol, Basic or Heavy, not Thrown) through its weapon slots, never Hustle.
   See "Who gets the buttons".
-- Being pushed counts as moving for all three: the engine's overwatch reacts to any position
-  change (`OverwatchController.HandleEntityPositionChanged`), so a push into Reflex Shot's circle or
-  Overwatch's cone draws fire, and Suppression fires when its target is pushed off its square.
+- Being pushed counts as moving for Overwatch and Suppression: the engine's overwatch reacts to any
+  position change (`OverwatchController.HandleEntityPositionChanged`), so a push into Overwatch's cone
+  draws fire, and Suppression fires when its target is pushed off its square. Reflex Shot fires once,
+  immediately on cast (RTO-T111), so there's no armed zone left for a push to trigger.
 - Pets never overwatch, even with a ranged weapon: they don't plan ahead. Party pets get no buttons,
   and the enemy AI never casts the abilities for a pet.
 - Each shot is the weapon's normal single shot, with normal hit chance (ranged hit chance already
   scales with distance: `RuleCalculateHitChances.OnTriggerRanged` multiplies by
-  `RuleCalculateAbilityDistanceFactor`) plus the ability's own effect on the real roll: Reflex Shot
-  scales it by how much aim the facing retained, Overwatch's reach penalty is added on top (sections
-  below). Suppression's shot has neither. Reflex Shot alone deals 33% damage too (RTO-T82, RTO-T96,
-  below).
-- **All three triggered shots are attacks of opportunity (`IsAttackOfOpportunity`; RTO-T50, RTO-T85,
-  RTO-T94):** a Reflex Shot, an Overwatch shot and Suppression's real shot are all the same thing by
-  nature — taking a shot in the spur of the moment because the chance presented itself, exactly what a
-  melee threat's free swing already is when something leaves its reach. Reflex Shot's shot carried the
-  flag only from RTO-T94 on; Overwatch's and Suppression's always did. Fired with a `Clone(false)` of the
-  real trigger ability flagged `IsAttackOfOpportunity = true` (Reflex Shot and Overwatch share one seam,
-  `Abilities_AttackOfOpportunity` on `PartOverwatch.TryTriggerAttack`; Suppression flags its own clone
-  directly, since it doesn't run through `PartOverwatch`), so talents and traits that key off that flag
-  (`CheckIfAttackOfOpportunityGetter`, `AttackOfOpportunityModifier`) apply to all three alike.
+  `RuleCalculateAbilityDistanceFactor`) plus the ability's own effect on the real roll: Overwatch's reach
+  penalty is added on top (section below); Reflex Shot and Suppression's shots have none - Reflex Shot's
+  target is simply chosen at random (RTO-T111) rather than its chance scaled. Reflex Shot alone deals
+  33% damage (RTO-T82, below).
+- **Overwatch's and Suppression's triggered shots are attacks of opportunity (`IsAttackOfOpportunity`;
+  RTO-T50, RTO-T85, RTO-T94):** taking a shot in the spur of the moment because the chance presented
+  itself, exactly what a melee threat's free swing already is when something leaves its reach. Fired with
+  a `Clone(false)` of the real trigger ability flagged `IsAttackOfOpportunity = true` (Overwatch's own
+  seam, `Abilities_AttackOfOpportunity` on `PartOverwatch.TryTriggerAttack`; Suppression flags its own
+  clone directly, since it doesn't run through `PartOverwatch`), so talents and traits that key off that
+  flag (`CheckIfAttackOfOpportunityGetter`, `AttackOfOpportunityModifier`) apply to both. Reflex Shot
+  carried this flag and drew from the same reaction budget through RTO-T94–T110; since RTO-T111 it's a
+  direct cast on the caster's own turn and AP, not a reactive trigger, so it no longer flags
+  `IsAttackOfOpportunity` or spends from the budget below.
   - **Shared reaction budget (RTO-T94):** the same per-round attack-of-opportunity budget a melee threat
     already draws from (`PartUnitCombatState.CanAttackOfOpportunity`/`MaxAttacksOfOpportunityPerRound`,
     the `AttackOfOpportunityCount` stat, 1 by default and raised by talents the way Combat Reflexes
-    raises it on the tabletop) now gates all three shots too, checked at the moment each shot would
-    actually fire and spent only then (`Abilities.CanMakeAttackOfOpportunity`/`SpentAttackOfOpportunity`).
-    A mook who already reacted this round — a melee attack of opportunity, an earlier shot from one of
-    these three — can't also loose another: Overwatch's follow-up shot checks it again, independently of
-    the AP-funded shot budget below, so a two-shot cone can still net only one shot for a capped unit.
-    The base game already exempts player characters and Elite+ enemies from this cap entirely, so this
-    only reins in regular enemy mooks and never costs the player a shot; it was chosen over a bespoke
-    limiter because this ruleset already has its own "Combat Reflexes"-style reaction economy, and
-    reusing it (rather than, say, XCOM's one-reaction-per-overwatching-unit model, which this mod's
-    shot-budget and re-shot rules already cover on their own terms) keeps every kind of reaction —
-    melee, Reflex Shot, Overwatch, Suppression — spent from the one pool the rest of the game already
-    understands.
-  - The three still keep distinct roles: Reflex Shot is the low-power, low-chance last move to spend a
-    spare AP on; Overwatch is an intentional setup for a shot with attack-of-opportunity bonuses;
-    Suppression pins an enemy down, and a Suppressed unit's own ranged attacks lose a quarter of their
-    hit chance (RTO-T86, eased from half in RTO-T87).
-- **Rounds in the chamber (RTO-T93):** Reflex Shot and Overwatch grey out, the same as any other
-  ammo-gated ability, once the weapon they'd actually fire has no ammo left (`ItemEntityWeapon.CurrentAmmo
-  <= 0`; a weapon that doesn't track ammo, `WarhammerMaxAmmo < 0`, is always available). Both blueprints
+    raises it on the tabletop) gates Overwatch's and Suppression's shots, checked at the moment each shot
+    would actually fire and spent only then (`Abilities.CanMakeAttackOfOpportunity`/`SpentAttackOfOpportunity`).
+    A mook who already reacted this round - a melee attack of opportunity, an earlier shot from either -
+    can't also loose another: Overwatch's follow-up shot checks it again, independently of the AP-funded
+    shot budget below, so a two-shot cone can still net only one shot for a capped unit. The base game
+    already exempts player characters and Elite+ enemies from this cap entirely, so this only reins in
+    regular enemy mooks and never costs the player a shot; it was chosen over a bespoke limiter because
+    this ruleset already has its own "Combat Reflexes"-style reaction economy, and reusing it (rather
+    than, say, XCOM's one-reaction-per-overwatching-unit model, which this mod's shot-budget and re-shot
+    rules already cover on their own terms) keeps every kind of reaction - melee, Overwatch, Suppression -
+    spent from the one pool the rest of the game already understands.
+  - The three still keep distinct roles: Reflex Shot is a bit of chaos thrown in alongside a spare AP;
+    Overwatch is an intentional setup for a shot with attack-of-opportunity bonuses; Suppression pins an
+    enemy down, and a Suppressed unit's own ranged attacks lose a quarter of their hit chance (RTO-T86,
+    eased from half in RTO-T87).
+- **Rounds in the chamber (RTO-T93):** all three grey out, the same as any other ammo-gated ability, once
+  the weapon they'd actually fire has no ammo left (`ItemEntityWeapon.CurrentAmmo <= 0`; a weapon that
+  doesn't track ammo, `WarhammerMaxAmmo < 0`, is always available). Reflex Shot and Overwatch's blueprints
   carry the game's own `AbilityCasterMainWeaponHasAmmo`, but its stock check only reads the caster's main
   (or, with `SecondWeapon`, off) hand; a prefix on `IsCasterRestrictionPassed`, scoped to our two
   abilities, redoes it against whichever slot `Abilities.RangedWeapon` would actually fire from (main
   hand, off hand, or an extra limb), the same lookup the weapon-type check above already uses. Suppression
-  doesn't carry the component: it targets an enemy directly rather than firing from a chosen facing or
-  cone, so its own cast-time weapon-type check already covers it the way it always has. Once an overwatch
-  is live, its shots can't outrun the chamber either: `AbilityOnTrigger` is always the weapon's own real
-  attack ability (`Abilities.RangedWeapon`'s `AbilityData`, see "Which gun fires" below), so the engine's
-  own `AbilityData.IsAvailable` ammo gate (`UnitUseAbility.OnAction`) silently withholds a shot that would
-  outrun the magazine, Overwatch's follow-up shot included.
+  doesn't carry the component: it targets an enemy directly, so its own cast-time weapon-type check
+  already covers it the way it always has. Once an Overwatch cone is live, its shots can't outrun the
+  chamber either: `AbilityOnTrigger` is always the weapon's own real attack ability
+  (`Abilities.RangedWeapon`'s `AbilityData`, see "Which gun fires" below), so the engine's own
+  `AbilityData.IsAvailable` ammo gate (`UnitUseAbility.OnAction`) silently withholds a shot that would
+  outrun the magazine, Overwatch's follow-up shot included. Reflex Shot only ever fires once, right on
+  cast, so this only matters at the moment it's cast.
 - All three cost 1 AP (the blueprints' `ActionPointCost`, and the slot `AP` on enemy weapons). Overwatch
   and Suppression cost 1 more AP when the active ranged weapon is Heavy (`WeaponHeaviness.Heavy`,
   RTO-T51): a prefix on `RuleCalculateAbilityActionPointCost.OnTrigger` adds to `CostBonus`, the same
@@ -70,92 +72,68 @@
 - Overwatch ends when the overwatcher starts its next turn, acts, or combat ends
   (`OverwatchController`).
 - **Damage interrupts (RTO-T67):** any real damage (`RuleDealDamage`, not fake previews, result > 0)
-  stops the victim's Overwatch or Reflex Shot (`PartOverwatch.Stop`) and removes every Suppressed buff it
-  cast (`DamageInterrupt.cs`).
+  stops the victim's active Overwatch (`PartOverwatch.Stop`) and removes every Suppressed buff it cast
+  (`DamageInterrupt.cs`). Reflex Shot fires at once on cast (RTO-T111) and has no armed window left to
+  interrupt.
 - In-game checks for every rule here are in [TESTING.md](TESTING.md).
 - The game's AI treats every active overwatch area as a threat when choosing paths (`AiBrainHelper`
-  reads `PartOverwatch.OverwatchArea`), whether or not it can see the shooter, so a cone or circle would
-  only ever be a no-go zone that never fires. This mod's areas are ignored instead (RTO-T87, T88): a
-  postfix on `AiBrainHelper.GatherThreatsData` (`EnemyAi_OverwatchThreats`) removes active Reflex Shot
-  and Overwatch overwatchers from each node's `overwatchUnits`, which `WarhammerPathAiMetricCostProvider`
-  counts as path cost, so units move as they would anyway and get caught by the shots. The game's own
-  overwatches are left as they are. How enemies use the abilities is under "Enemy AI" below.
+  reads `PartOverwatch.OverwatchArea`), whether or not it can see the shooter, so a cone would only ever
+  be a no-go zone that never fires. This mod's cones are ignored instead (RTO-T87, T88): a postfix on
+  `AiBrainHelper.GatherThreatsData` (`EnemyAi_OverwatchThreats`) removes active Overwatch overwatchers
+  from each node's `overwatchUnits`, which `WarhammerPathAiMetricCostProvider` counts as path cost, so
+  units move as they would anyway and get caught by the shots. The game's own overwatches are left as
+  they are. How enemies use the abilities is under "Enemy AI" below.
 - **Outline (RTO-T56, T63, T64, T68, T70):** the game's own area highlight is a shared red fill used for
-  every hostile area and isn't easy to see, so `AbilityOutline.cs` draws thin lines along the
-  tile edges, 50% transparent, yellow for Reflex Shot and blue for Overwatch (`AbilityOutline.ReflexColor`/
-  `OverwatchColor`, RTO-T76; the suppression tether is unchanged), of the Reflex Shot circle or Overwatch cone: one `LineRenderer` per boundary tile edge
-  (every side of a cell in the area that borders a cell outside it), placed through the grid's own
-  transform at each cell's height, plus a vertical connector at any corner where edges meet at
-  different heights (a crate top next to the floor). All lines share one `Hidden/Internal-Colored`
-  alpha-blended material drawn on top of the terrain; no art asset. It's driven every frame by `VisualsDriver` (a
-  hidden `DontDestroyOnLoad` object; the simulation tick doesn't run every frame while aiming): the
-  ability the player is aiming (`Game.SelectedAbilityHandler`) keeps its preview, which the
-  `GetOrientedPattern` prefixes redraw whenever the aimed area changes, for as long as it stays
-  selected; an active overwatch keeps its outline on `PartOverwatch.OverwatchArea`; anything else
-  (cast, cancelled, another ability picked) is hidden. `GetOrientedPattern` calls for other casters
-  (the AI weighing targets) never draw a preview.
+  every hostile area and isn't easy to see, so `AbilityOutline.cs` draws thin blue lines along the tile
+  edges, 50% transparent (`AbilityOutline.OverwatchColor`, RTO-T76; the suppression tether is unchanged),
+  of the Overwatch cone: one `LineRenderer` per boundary tile edge (every side of a cell in the area that
+  borders a cell outside it), placed through the grid's own transform at each cell's height, plus a
+  vertical connector at any corner where edges meet at different heights (a crate top next to the floor).
+  All lines share one `Hidden/Internal-Colored` alpha-blended material drawn on top of the terrain; no art
+  asset. It's driven every frame by `VisualsDriver` (a hidden `DontDestroyOnLoad` object; the simulation
+  tick doesn't run every frame while aiming): the ability the player is aiming (`Game.SelectedAbilityHandler`)
+  keeps its preview, which the `GetOrientedPattern` prefix redraws whenever the aimed cone changes, for as
+  long as it stays selected; an active overwatch keeps its outline on `PartOverwatch.OverwatchArea`;
+  anything else (cast, cancelled, another ability picked) is hidden. `GetOrientedPattern` calls for other
+  casters (the AI weighing targets) never draw a preview. Reflex Shot has no aiming step and no armed
+  zone, so it never shows an outline (RTO-T111).
 
-### Reflex Shot (RTO-T5, RTO-T21)
-XCOM 2 overwatch: a circle around the unit, every direction, whose radius is the equipped weapon's own
-range (RTO-T62; no fixed size). It fires once at the first enemy that moves or acts inside
-(`Mode: Overwatch`, `HitOnce`), then ends. Costs 1 AP whatever the weapon (RTO-T82). Ends the turn.
-- **Radius:** the blueprint's circle (radius 10) is only a placeholder; `ReflexShot_CentreOnShooter`
-  rebuilds it with `AoEPattern.CopyAndOverrideRadius` at the weapon's `RangeCells`, and that one prefix
-  feeds the preview, `GetOverwatchArea` (the real trigger zone) and the outline. The tooltip's
-  "10-cell radius" line is drawn from the static blueprint pattern and can't follow it.
-- **Facing:** casting asks for a point within that radius (`Range: Custom`, `CanTargetPoint`,
-  `ShouldTurnToTarget`; the click range is set to the weapon's range by a postfix on
-  `RuleCalculateAbilityRange.OnTrigger`, `ReflexShot_RangeFromWeapon`); the unit turns to face it, the direction it expects
-  enemies from, lateral or diagonal. The circle stays centred on the unit whatever is clicked: a
-  prefix on `AbilityAoEPatternSettings.GetOrientedPattern` passes the caster's node as the target node
-  (`ReflexShot_CentreOnShooter`), the same seam the preview and `GetOverwatchArea` use.
-- **Retained aim (RTO-T96):** a reflex shot keeps the shooter's own hit chance in full (Ballistic
-  Skill, range falloff, cover, talents, the weapon's own bonus: the game's ranged calculation,
-  `RuleCalculateHitChances.OnTriggerRanged`, runs untouched), then that result is scaled by how much
-  of the weapon's aim was still on target when the shot broke: literally the cosine of the angle
-  between the facing the player picked and the direction the shot actually needed
-  (`ReflexShot.RetainedFraction`) — the dot product of the two directions, 1 dead ahead, 0 at a
-  quarter-turn and beyond, floored at `ReflexShot.MinRetainedFraction` (0.10) instead of going to zero,
-  so a shot thrown from behind is still a sliver of a chance rather than an impossibility. This
-  replaced a flat `33` base with a linear `+10`/`-30` turn modifier (RTO-T82, before it RTO-T72's flat
-  `-33`): tied to nothing about the shooter, it made Reflex Shot relatively *weaker* the better a
-  character's Ballistic Skill got, since a flat base never benefited from that skill the way a normal
-  shot does. A postfix on `OnTriggerRanged` (`ReflexShot_BaseHitChance`) applies the scale after the
-  game's own result is final: the game's caps (`ResultOverkillBorder`) are reapplied, and the overkill
-  crit bonus (`HitChanceOverkill` on the Righteous Fury rule) is recomputed from the scaled value, the
-  same way `Suppression_ReduceHitChance`'s flat percentage cut already does. Scatter shots and the
-  border chance against destructibles are left as the game has them.
-- **Damage (RTO-T82):** a Reflex Shot deals 33% of the weapon's damage (`ReflexShot.DamagePercent`): a
-  prefix on `RuleCalculateDamage.OnTrigger` (`ReflexShot_Damage`) adds a `PctMul_Extra` modifier under
-  the Reflex Shot ability's name; the game's other damage modifiers still apply.
-- **Hit-chance preview (RTO-T71, RTO-T80):** while aiming Reflex Shot or Overwatch, each enemy inside
-  the previewed area shows the game's own hit-chance overtip (round gauge and damage range, as for a
-  normal attack) for the shot it would take. A postfix on `AbilityDataHelper.GatherAffectedTargetsData`
-  replaces our ability's per-target `AbilityTargetUIData` (an area ability counts as "always hits", so
-  the overtip showed only its icon) with the weapon attack's own, under our ability; while it's built,
-  a prefix on `RuleCalculateHitChances.OnTrigger` adds Overwatch's reach penalty to
-  `HitChanceValueModifiers` when that's the ability being aimed, so caps, cover, dodge and talents
-  apply exactly as on the real roll (`HitChancePreview.cs`). For Reflex Shot, `HitChancePreview.Pending`
-  is flagged `Reflex` and carries the retained-aim fraction instead (`ReflexFraction`), so the
-  hit-chance and damage patches above apply to the preview too (scaled chance, 33% damage; RTO-T82,
-  RTO-T96); the one-frame damage rule cache is invalidated around it, keeping the reduced damage out of
-  every other preview.
-  The angle is between the facing (unit toward `PartOverwatch`'s saved target point, `m_Target`) and
-  the unit-to-target direction on the ground. `Overwatch` mode stops the part as soon as the shot is
-  queued, so a prefix on `PartOverwatch.TryTriggerAttack` works the fraction out and keeps it per
-  shooter; a prefix on `RulePerformAttackRoll.OnTrigger` (the real attack roll, which triggers its own
-  `HitChanceRule` first) marks the roll and its hit-chance rule with that fraction and the ability's
-  fact as its source (`ReflexShot.Rolls`), so the hit-chance and damage patches above know to apply it.
-  The damage breakdown still names Reflex Shot as the reduction (`ReflexShot_Damage`'s `PctMul_Extra`
-  modifier); the hit-chance side has no line of its own since it's a rescale of the final result, not
-  an added modifier — only the number itself changes, the same as Suppression's cut. UI hit-chance
-  previews never see this marking (they go through the `HitChancePreview.Pending` fallback instead). It
-  isn't used up by the first roll
-  (RTO-T82): every roll the shooter makes at that same target within 5 s (`ReflexShot.PendingSeconds`)
-  gets it, so every round of a burst counts as a Reflex Shot (retained-aim scale, 33% damage); after
-  that it lapses, so no later attack (e.g. a Suppression shot) picks it up, and a new overwatch of any
-  kind clears it (`ReflexShot_ForgetOnNewOverwatch`). The facing comes from saved state, so it survives
-  save and load.
+### Reflex Shot (RTO-T5, RTO-T21, redesigned RTO-T111)
+Ends the turn, then at once fires one real shot at a randomly chosen enemy within the weapon's range and
+line of sight - no facing, no waiting as a reaction. Costs 1 AP whatever the weapon (RTO-T82). A little
+chaos on top of Overwatch's deliberate, aimed control of the ground: Overwatch still needs aiming to
+matter, Reflex Shot is the free-for-all alternative.
+- **No targeting step:** the blueprint has `CanTargetPoint: false`, `CanTargetSelf: true`, `Range:
+  Personal` - casting it asks for nothing from the player, the same shape a self-buff takes. It carries
+  no `AbilityEffectOverwatch`/`PartOverwatch` and no `WarhammerAbilityAttackDelivery` pattern anymore: the
+  whole effect is a single `AbilityEffectRunAction` with a deliberately empty action list.
+- **Firing (`ReflexShot.cs`):** a postfix on `AbilityEffectRunAction.Apply`, scoped to Reflex Shot's own
+  ability, does the whole thing. `ReflexShot.RandomTargetFor` picks uniformly among every current enemy
+  within the active ranged weapon's range (`Abilities.RangedWeapon`/`RangedAttack`) and line of sight
+  (`caster.InRangeInCells`, `caster.HasLOS`), using the engine's own seeded random
+  (`PFStatefulRandom.Mechanics`, the same source the stock `ContextRandomTargetWithinCellsFromCaster-
+  PositionEvaluator` uses) rather than `UnityEngine.Random`: unlike this mod's purely cosmetic random
+  picks (Suppression's near-miss direction, RTO-T105), this pick decides real damage and must stay in
+  sync between multiplayer peers. The shot itself is a fresh `Clone(false)` of the weapon's attack, fired
+  through `UnitOverwatchAttackParams` (`caster.Commands.Run`) - the same out-of-turn attack path
+  Suppression's real shot uses - so hit chance, damage and the visuals are the normal ones for that
+  weapon. If no enemy qualifies, nothing fires (the AP is still spent, the same as an Overwatch cast that
+  catches nothing).
+- **Hit chance:** no penalty of any kind - the shooter's own hit chance applies in full (Ballistic Skill,
+  range falloff, cover, talents: the game's ranged calculation, `RuleCalculateHitChances.OnTriggerRanged`,
+  runs untouched). The chaos is in who gets shot, not in a worse chance to hit them. This replaces the old
+  retained-aim scale (RTO-T96: the cosine of the angle between a picked facing and the shot's actual
+  direction, floored at 10% instead of going to zero), which no longer applies now that there's no facing
+  to retain.
+- **Damage (RTO-T82):** still 33% of the weapon's damage (`ReflexShot.DamagePercent`), unchanged by the
+  redesign: a prefix on `RuleCalculateDamage.OnTrigger` (`ReflexShot_Damage`) adds a `PctMul_Extra`
+  modifier under the Reflex Shot ability's name, keyed off a `ConditionalWeakTable<AbilityData,
+  EntityFact>` (`ReflexShot.Shots`) that marks exactly the clone `ReflexShot.Fire` built, rather than the
+  old facing/retained-aim bookkeeping; the game's other damage modifiers still apply.
+- No more hit-chance preview for Reflex Shot: with no aiming step, there's nothing to preview.
+  `HitChancePreview.cs` is Overwatch-only now; `ReflexShot.SetRawHitChance` (the helper that reapplies the
+  game's own hit-chance caps and overkill crit bonus after a rescale) stayed, since Suppression's own hit-
+  chance cut (`Suppression_ReduceHitChance`) still needs it.
 
 ### Overwatch (RTO-T6)
 - After pressing the button the cone resizes live with the cursor: farther gives a longer, narrower
@@ -206,11 +184,11 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   twice. The reach is read off the locked zone (the farthest cell of `PartOverwatch.OverwatchArea` from
   the shooter). It is worked out when the overwatch queues the shot (`OverwatchCone_ChooseShots`) and kept per (shooter, target) in
   `OverwatchDebuff.Pending`, then added to that shot's real roll (`RulePerformAttackRoll`) under the
-  Overwatch ability's name, the same seam Reflex Shot uses, so it shows in the hit-chance breakdown and
-  combat log. Captured at queue time because the last shot stops the overwatch before its roll, and so
-  the overwatcher's other attacks (e.g. a melee attack of opportunity) never pick it up.
-- **Attack of opportunity (RTO-T85, RTO-T94):** an Overwatch shot is a prepared attack of opportunity,
-  same as Reflex Shot's own single shot (see "Shared rules" above). For the duration of each shot,
+  Overwatch ability's name, so it shows in the hit-chance breakdown and combat log. Captured at queue
+  time because the last shot stops the overwatch before its roll, and so the overwatcher's other attacks
+  (e.g. a melee attack of opportunity) never pick it up.
+- **Attack of opportunity (RTO-T85, RTO-T94):** an Overwatch shot is a prepared attack of opportunity
+  (see "Shared rules" above). For the duration of each shot,
   `Abilities_AttackOfOpportunity` swaps the part's trigger ability (`PartOverwatch.m_AbilityOnTrigger`,
   shared by both abilities) for a `Clone(false)` flagged `IsAttackOfOpportunity = true`, and its postfix
   puts the original back, so feats and traits that key off that flag (`CheckIfAttackOfOpportunityGetter`,
@@ -276,9 +254,8 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   opportunity, a unit carrying the Suppressed buff keeps 75% of its final ranged hit chance (RTO-T86
   halved it; RTO-T87 eased it to 75%: Suppression is a pin, not a disable, and can be a turn's last spare
   AP). A low-priority postfix on `RuleCalculateHitChances.OnTriggerRanged` (`Suppression_ReduceHitChance`,
-  renamed from `Suppression_HalveHitChance`; `HitChancePercent` 75) runs after every modifier and after
-  Reflex Shot's own retained-aim scale (so a Suppressed unit's Reflex Shot is reduced too), and sets the
-  reduced value through `ReflexShot_BaseHitChance.SetRawResult`, which re-applies the cap
+  renamed from `Suppression_HalveHitChance`; `HitChancePercent` 75) runs after every modifier, and sets the
+  reduced value through `ReflexShot.SetRawHitChance`, which re-applies the cap
   (`ResultOverkillBorder`) and recomputes the overkill crit bonus. Since RTO-T87 it scales the final,
   capped chance (`ResultHitChance`), not the uncapped raw value, so every shooter loses the same quarter
   (`Mathf.RoundToInt`, which rounds .5 to even): a capped 95 becomes 71, 60 becomes 45, 70 (52.5) becomes 52.
@@ -299,7 +276,7 @@ farthest away, so a character who starts a fight far from the group isn't penali
   node (`CurrentUnwalkableNode`), the same pattern `OverwatchDebuff.ReachOf` uses for a cone's reach.
   Worked out fresh every time the ability's range is checked, by a postfix on
   `RuleCalculateAbilityRange.OnTrigger` (`Hustle_Range`); the blueprint's own `Range: Unlimited` is only
-  a placeholder, the same role `ReflexShot_RangeFromWeapon` plays for Reflex Shot.
+  a placeholder, the same role `Abilities_RangeFromActiveWeapon` plays for Overwatch and Suppression.
 - **Free of cost:** `AbilityCustomMoveToTarget`'s `m_ActionsAfterMoved` runs a
   `WarhammerContextActionRestoreActionPoints` with `MovePointsToMax: true` right after the move, so the
   Movement Points it spent come back; the ability's own `ActionPointCost` is 0 and it doesn't end the
@@ -332,11 +309,11 @@ points left, or the after-move pick.
 - Some enemy can be shot in the open: nothing changes, the normal attack runs.
 - No enemy can be shot, but one is within weapon range + 8 cells (`ApproachMargin`): **Overwatch**
   aimed at the nearest one (the target point sits at its distance, capped at weapon range, so the
-  resize patch sizes the cone to reach it) with 2+ AP, or **Reflex Shot** with 1 AP (or when the
-  cone can't be aimed), facing the nearest enemy, where one shot in a full circle beats one shot in a cone.
-  Each still needs its cost (`AbilityData.IsAvailable`): Reflex Shot is 1 AP whatever the weapon
-  (RTO-T82), so a Heavy-armed enemy with 1 AP casts Reflex Shot (it could never afford Overwatch, which
-  needs 2+ AP anyway).
+  resize patch sizes the cone to reach it) with 2+ AP, or **Reflex Shot** with 1 AP (or when the cone
+  can't be aimed) - a self-cast, same as the player's own, with no aiming needed since RTO-T111 fires
+  at a random enemy in range regardless. Each still needs its cost (`AbilityData.IsAvailable`): Reflex
+  Shot is 1 AP whatever the weapon (RTO-T82), so a Heavy-armed enemy with 1 AP casts Reflex Shot (it
+  could never afford Overwatch, which needs 2+ AP anyway).
 - The ranged-weapon check uses the first ranged weapon in the active set (`Abilities.RangedAttack`:
   main hand, off hand, extra limbs; RTO-T79), so an enemy with a sword in the main hand and a pistol in
   the off hand overwatches with the pistol. The rule covers every non-player unit, allied NPCs included.
@@ -393,7 +370,7 @@ and removes `Overwatch_Feature` from anyone an earlier build gave it to.
   original, unpatched method. Out of combat they're unusable (`InCombatOnly`).
 - **Placement** (`ActionBar.cs`, RTO-T112): the last slots of row 2 (the bar is `PartUnitUISettings.Slots`),
   a window sized to the whole granted set (`Abilities.BarPlaced`: Reflex Shot, Overwatch, Suppression,
-  Hustle - slots 16-20 for 4, growing as more are added), else the first free slot anywhere. Runs on
+  Hustle - slots 17-20 for 4, growing as more are added), else the first free slot anywhere. Runs on
   grant and as a prefix on `PartUnitUISettings.TryToInitialize`, which the bar calls just before reading
   its slots, whether or not the game's auto-fill setting is on. An ability the player removed from the
   bar (`m_RemovedFromActionBar`) stays off. Previously slots 8-10 of row 1, then the last three of row 2,
@@ -406,12 +383,13 @@ and removes `Overwatch_Feature` from anyone an earlier build gave it to.
   sword and pistol are held, so a postfix on `AbilityEffectOverwatch.Apply` restarts the overwatch on the
   ranged weapon's attack; Suppression's real and cosmetic shots use it too.
 
-**Cast delivery (both).** `WarhammerAbilityAttackDelivery`'s pattern delivery applies the ability's
+**Cast delivery (Overwatch).** `WarhammerAbilityAttackDelivery`'s pattern delivery applies the ability's
 effects once per unit inside the area (`AbilityExecutionProcess.TickDeliveryProcess`): an empty zone never
-started overwatch, and several enemies restarted it once each. A prefix on its `Deliver` (matching all three
-abilities, but only Reflex Shot and Overwatch have that delivery component; Suppression targets one unit
-directly) makes them deliver exactly once, to the clicked target. `WeaponAttack: None` already means no attack
-is made on cast.
+started overwatch, and several enemies restarted it once each. A prefix on its `Deliver` (`Abilities_DeliverOnce`,
+scoped to `Abilities.IsOurs`, so it's a no-op for Suppression and Reflex Shot since RTO-T111, neither of which
+carries this component) makes it deliver exactly once, to the clicked target. `WeaponAttack: None` already
+means no attack is made on cast. Suppression targets one unit directly; Reflex Shot no longer targets an area
+at all (RTO-T111).
 
 ## Mod packaging (RTO-T3)
 

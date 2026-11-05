@@ -14,9 +14,9 @@ using Kingmaker.UnitLogic.Progression.Features;
 namespace RogueTraderOverwatch;
 
 // Puts a party member's granted abilities (Reflex Shot, Overwatch, Suppression, Hustle, ...) on the ability
-// bar: the last slots of row 2 (RTO-T112; sized to the whole set, so it's slots 16-20 for 5 abilities), else
-// the first free slot anywhere. Runs whether or not the game's "auto-fill action bar" setting is on, and
-// leaves off any the player removed from the bar.
+// bar: the last slots of row 2 (RTO-T112; sized to the whole set, so it's slots 17-20 for today's 4
+// abilities, growing toward row 1 as more are added), else the first free slot anywhere. Runs whether or
+// not the game's "auto-fill action bar" setting is on, and leaves off any the player removed from the bar.
 [HarmonyPatch(typeof(PartUnitUISettings), nameof(PartUnitUISettings.TryToInitialize))]
 internal static class ActionBar
 {

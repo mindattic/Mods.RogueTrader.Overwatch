@@ -81,15 +81,15 @@ internal static class Abilities
     }
 }
 
-// A triggered Reflex Shot or Overwatch shot is an attack of opportunity: taking a shot in the spur of the
-// moment because the chance presented itself, the same as a melee threat's free swing when something leaves
-// its reach (Suppression's real shot already is one, flagged directly in Suppression.cs since it doesn't run
-// through PartOverwatch). Flagging it (IsAttackOfOpportunity) lets talents and traits that key off that flag
-// (CheckIfAttackOfOpportunityGetter) apply, the same seam Overwatch already used; and it spends from the same
-// per-round reaction budget those melee threats draw from, so a unit that already reacted its allotment away
-// this round can't also loose a Reflex Shot or an Overwatch volley on top of it (RTO-T94). Runs ahead of
-// ReflexShot_RecordTurn and OverwatchCone_ChooseShots (both default priority) so a spent-out shooter never
-// reaches their bookkeeping at all.
+// A triggered Overwatch shot is an attack of opportunity: taking a shot in the spur of the moment because the
+// chance presented itself, the same as a melee threat's free swing when something leaves its reach (Suppression's
+// real shot already is one, flagged directly in Suppression.cs since it doesn't run through PartOverwatch; Reflex
+// Shot no longer arms a PartOverwatch at all, RTO-T111, so this path is Overwatch-only in practice, though it's
+// still scoped to Abilities.IsOurs for the weapon/ammo/AP-cost checks elsewhere in this file). Flagging it
+// (IsAttackOfOpportunity) lets talents and traits that key off that flag (CheckIfAttackOfOpportunityGetter) apply;
+// and it spends from the same per-round reaction budget those melee threats draw from, so a unit that already
+// reacted its allotment away this round can't also loose an Overwatch volley on top of it (RTO-T94). Runs ahead of
+// OverwatchCone_ChooseShots (default priority) so a spent-out shooter never reaches its bookkeeping at all.
 [HarmonyPatch(typeof(PartOverwatch), nameof(PartOverwatch.TryTriggerAttack))]
 internal static class Abilities_AttackOfOpportunity
 {
@@ -199,7 +199,9 @@ internal static class Abilities_ActionPointCostByWeaponSize
 }
 
 // The pattern delivery applies the ability's effects once per unit inside the area: an empty zone would never
-// start overwatch, and several enemies would restart it once each. Deliver once, to the clicked target.
+// start overwatch, and several enemies would restart it once each. Deliver once, to the clicked target. Overwatch
+// only since RTO-T111: Reflex Shot no longer has this delivery component, and Suppression never did (it targets
+// one unit directly).
 [HarmonyPatch(typeof(WarhammerAbilityAttackDelivery), nameof(WarhammerAbilityAttackDelivery.Deliver))]
 internal static class Abilities_DeliverOnce
 {

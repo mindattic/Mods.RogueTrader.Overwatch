@@ -10,23 +10,18 @@ using UnityEngine;
 
 namespace RogueTraderOverwatch;
 
-// A bright yellow line along the tile edges of a Reflex Shot circle or Overwatch cone, while aiming and while it's
-// active, since the game's own area highlight (a shared red fill used for every hostile area) is hard to see. Pure
-// code, no Unity asset: LineRenderers with Unity's built-in Hidden/Internal-Colored shader. Every side of a cell in
-// the area that borders a cell outside it is an edge; the edges are chained into closed loops in grid space (an
-// area can have several, e.g. around a hole) and each corner is placed in the world through the grid's own transform
-// at its cell's height.
+// A bright blue line along the tile edges of an Overwatch cone, while aiming and while it's active, since the
+// game's own area highlight (a shared red fill used for every hostile area) is hard to see. Pure code, no Unity
+// asset: LineRenderers with Unity's built-in Hidden/Internal-Colored shader. Every side of a cell in the area
+// that borders a cell outside it is an edge; the edges are chained into closed loops in grid space (an area can
+// have several, e.g. around a hole) and each corner is placed in the world through the grid's own transform at
+// its cell's height.
 internal static class AbilityOutline
 {
     private const float LineWidth = 0.025f;
     private const float GroundOffset = 0.06f;
     private const float MinStep = 0.05f; // height difference (grid units) that gets a vertical connector
-    // 50% transparent: yellow for Reflex Shot's circle, blue for Overwatch's cone.
-    public static readonly Color ReflexColor = new Color(1f, 0.92f, 0.1f, 0.5f);
-    public static readonly Color OverwatchColor = new Color(0.25f, 0.6f, 1f, 0.5f);
-
-    public static Color ColorFor(Kingmaker.UnitLogic.Abilities.AbilityData ability) =>
-        OverwatchCone.IsOurs(ability) ? OverwatchColor : ReflexColor;
+    public static readonly Color OverwatchColor = new Color(0.25f, 0.6f, 1f, 0.5f); // 50% transparent
 
     private static readonly Dictionary<string, List<LineRenderer>> Active = new();
 
@@ -78,23 +73,24 @@ internal static class AbilityOutline
     private const float ActiveRefresh = 0.25f;
     private static readonly Dictionary<string, float> LastActiveRefresh = new();
 
-    // Called every frame (VisualsDriver): an active Reflex Shot / Overwatch keeps its outline on the locked zone; the
-    // ability currently being aimed (Game.SelectedAbilityHandler) keeps its preview; everything else is hidden.
+    // Called every frame (VisualsDriver): an active Overwatch keeps its outline on the locked zone; the ability
+    // currently being aimed (Game.SelectedAbilityHandler) keeps its preview; everything else is hidden. Reflex
+    // Shot no longer arms a zone or has a facing to aim (RTO-T111), so it never shows here.
     public static void Sync()
     {
         var aimed = Game.Instance.SelectedAbilityHandler?.Ability;
-        var aimer = aimed != null && (ReflexShot.IsOurs(aimed) || OverwatchCone.IsOurs(aimed)) ? aimed.Caster as BaseUnitEntity : null;
+        var aimer = aimed != null && OverwatchCone.IsOurs(aimed) ? aimed.Caster as BaseUnitEntity : null;
         var keep = new HashSet<string>();
         foreach (var unit in Game.Instance.State.AllBaseAwakeUnits)
         {
             var part = unit.GetOptional<PartOverwatch>();
-            if (part != null && !part.IsStopped && (OverwatchCone.IsOurs(part.Ability) || ReflexShot.IsOurs(part.Ability)))
+            if (part != null && !part.IsStopped && OverwatchCone.IsOurs(part.Ability))
             {
                 keep.Add(unit.UniqueId);
                 if (!LastActiveRefresh.TryGetValue(unit.UniqueId, out var at) || Time.unscaledTime - at >= ActiveRefresh)
                 {
                     LastActiveRefresh[unit.UniqueId] = Time.unscaledTime;
-                    Show(unit, part.OverwatchArea, ColorFor(part.Ability));
+                    Show(unit, part.OverwatchArea, OverwatchColor);
                 }
             }
             else if (unit == aimer)

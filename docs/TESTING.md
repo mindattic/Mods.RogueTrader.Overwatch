@@ -32,37 +32,36 @@ Expected: "Overwatch" by MindAttic is listed and enabled. The log has the health
 **A2. Loading a save.** Load any save.
 Expected: no `RogueTrader.Overwatch` errors in the log.
 
-## B. Ability bar placement (party)
+## B. Ability bar placement (party, RTO-T112)
 
-The bar is 10 slots per row. The mod places each of Reflex Shot, Overwatch and Suppression that isn't
-already on a character's bar: first into free slots among slots 8–10 of row 1, then the last three
-slots of row 2, then of row 3, then the first free slot anywhere. It runs when an area loads, when a
-companion is recruited and whenever the bar is refreshed for a character, whatever the game's
+The bar is 10 slots per row. The mod places each of Reflex Shot, Overwatch, Suppression and Hustle that
+isn't already on a character's bar: first into free slots at the very end of row 2 (a window sized to the
+whole set - slots 17–20 for 4 abilities), then the first free slot anywhere. It runs when an area loads,
+when a companion is recruited and whenever the bar is refreshed for a character, whatever the game's
 "auto-fill action bar" setting says.
 
 **B1. Existing save.** Load a mid-game save, select each party member in turn.
-Expected: every party member shows the three buttons in slots 8, 9 and 10 of row 1 (if those were
-empty), with the custom icons.
+Expected: every party member shows the four buttons in the last slots of row 2 (if those were empty),
+with the custom icons.
 
 **B2. New game.** Start a new game and reach the first fight.
 Expected: as B1 for the Rogue Trader, and for each companion as they join.
 
 **B3. Recruited companion.** Recruit a companion (or load a save just before a recruitment).
-Expected: the new companion has the three buttons straight away, placed as in B1.
+Expected: the new companion has the four buttons straight away, placed as in B1.
 
 **B4. Mercenary.** Hire a mercenary (custom companion) and add them to the party.
-Expected: they have the three buttons, placed as in B1, after the next area load at the latest.
+Expected: they have the four buttons, placed as in B1, after the next area load at the latest.
 
 **B4a. Pets.** With a pet in the party (including one with a ranged weapon), select it.
-Expected: no Reflex Shot, Overwatch or Suppression buttons on its bar.
+Expected: no Reflex Shot, Overwatch, Suppression or Hustle buttons on its bar.
 
-**B5. Row 1 full.** Drag three other abilities onto slots 8–10, replacing the three buttons. Select
+**B5. Row 2 full.** Drag four other abilities onto the end of row 2, replacing the four buttons. Select
 another character and back (or change area).
-Expected: the three buttons reappear in the free slots among the last three of row 2 (slots 18–20); if
-those are taken too, row 3 (28–30); otherwise the first free slot. The bar doesn't grow extra empty rows.
-(If they don't reappear at all, the game counted the replace as a removal: see B6, and note it.)
+Expected: the four buttons reappear in the first free slots anywhere. The bar doesn't grow extra empty
+rows. (If they don't reappear at all, the game counted the replace as a removal: see B6, and note it.)
 
-**B6. Removing a button.** Drag one of the three buttons off the bar. Change area, save and load.
+**B6. Removing a button.** Drag one of the four buttons off the bar. Change area, save and load.
 Expected: it stays off. The mod never re-adds a button the player removed. (Drag it back from the
 character's abilities to restore it.)
 
@@ -98,35 +97,20 @@ Expected: greyed as soon as the inventory closes. Re-equip a gun: lit again.
 **C12. Out of combat.** Walk around outside combat.
 Expected: the buttons are on the bar but can't be used.
 
-## D. Reflex Shot
+## D. Reflex Shot (redesigned RTO-T111)
 
-Ends your turn. Costs 1 AP, even with a Heavy weapon (RTO-T82). You pick the direction you expect enemies
-from; until your next turn it fires once at the first enemy that moves or acts within your weapon's range
-of you, in any direction, then it ends. The shot is a reaction, not an aimed shot: it keeps your own hit
-chance in full (Ballistic Skill, range falloff, cover, talents, the weapon's own bonus), then that chance
-is scaled by a "Reflex Shot" retained-aim fraction for how far you have to turn to fire: all of it straight
-ahead, down to 71% at 45°, 10% (the floor) from 90° all the way round to directly behind (RTO-T96). It
-deals 33% of the weapon's damage. Every round of a burst counts as a Reflex Shot.
+Ends your turn. Costs 1 AP, even with a Heavy weapon (RTO-T82). No aiming: the instant it's cast, it fires
+once at a randomly chosen enemy within your weapon's range and line of sight. It keeps your own hit chance
+in full (Ballistic Skill, range falloff, cover, talents, the weapon's own bonus - no penalty of any kind)
+and deals 33% of the weapon's damage.
 
-**D1. Cast.** In combat, with a gun, press Reflex Shot and click a point (within the weapon's range) to face.
-Expected: your character turns to face it; the highlighted area is a circle of the weapon's range centred
-on you, not on the clicked point; no shot on cast; your turn ends.
+**D1. Cast.** In combat, with a gun and at least one enemy in range and line of sight, press Reflex Shot.
+Expected: no targeting step at all (no circle, no facing to pick); a shot fires at once at one of the
+enemies in range, shown in the combat log like a normal attack; your turn ends.
 
-**D2. Enemy moves in range.** Let an enemy move within the weapon's range.
-Expected: one shot at it, shown in the combat log like a normal attack, scaled by the Reflex Shot
-retained-aim fraction and reduced damage (see D2d, D4b). No further shots this round, even if other
-enemies move.
-
-**D2a. Retained-aim fraction (RTO-T96).** Note a character's normal hit chance against an enemy for a
-direct shot, then repeat D2 with the enemy coming from straight ahead, from the side (90°) and from
-behind (180°) relative to the facing you picked.
-Expected: the Reflex Shot chance is the same as the normal shot, scaled: ~100% of it straight ahead, ~10%
-of it (the floor) from the side and from behind (90° to 180° are the same, both beyond the quarter-turn
-where the floor kicks in).
-
-**D2b. Facing survives a reload.** Cast Reflex Shot facing one way, save, load, then let an enemy come
-from behind.
-Expected: still scaled to the floor (~10% of the normal chance).
+**D2. Random target.** Cast Reflex Shot several times (reload a save between casts, or across several
+fights) with two or more enemies in range and line of sight.
+Expected: over several casts, different enemies get picked, not always the same one or always the nearest.
 
 **D2d. Damage (RTO-T82).** Note a character's damage range against an enemy for a normal shot, then let a
 Reflex Shot from them fire at that enemy.
@@ -134,32 +118,21 @@ Expected: the damage is about 33% of a normal shot's (other damage modifiers sti
 damage breakdown names Reflex Shot as the reduction.
 
 **D2e. Burst weapon (RTO-T82).** Reflex Shot with a burst-fire weapon (e.g. an autogun or heavy stubber).
-Expected: every round of the burst rolls with the retained-aim scale and 33% damage, not just the first.
-A later attack by the same shooter (e.g. its own next turn) has none of it.
+Expected: every round of the burst rolls with 33% damage, all at the one randomly chosen target. A later
+attack by the same shooter (e.g. its own next turn) has none of it.
 
-**D2c. Pushed into range.** Push an enemy (any push or knockback ability) from outside the circle to inside.
-Expected: the Reflex Shot fires at it, the same as if it had walked in.
+**D2f. Hit chance unpenalized (RTO-T111).** Note a character's normal hit chance against an enemy for a
+direct shot, then let a Reflex Shot from them fire at that same enemy (set up a fight with only that one
+enemy in range so the target is guaranteed).
+Expected: the Reflex Shot's hit chance matches the normal shot's exactly (only the damage is reduced, not
+the chance to hit).
 
-**D3. Enemy acts in range without moving.** Let an enemy inside the circle shoot or use an ability in place.
-Expected: one shot at it (acting also triggers Reflex Shot), then it ends.
+**D3. No enemy in range.** Cast Reflex Shot with every enemy out of weapon range or out of line of sight.
+Expected: no shot fires; the AP is still spent and the turn still ends.
 
-**D4. Enemy outside the circle.** Only enemies beyond the weapon's range move.
-Expected: no shot.
-
-**D4a. Radius follows the weapon (RTO-T62).** Cast Reflex Shot with a pistol, then with a long rifle.
-Expected: the circle (and the yellow outline) reaches exactly the weapon's own range each time, shorter
-for the pistol and longer than 10 cells for a long-range rifle; an enemy beyond it draws no shot. (The
-tooltip's "10-cell radius" line is static and won't change.)
-
-**D4b. Scales with the shooter's own skill (RTO-T96).** Let a Reflex Shot fire at an enemy right next to
-you, and another at one near the edge of the circle, both straight ahead, once with a character whose
-Ballistic Skill is high and once with one whose Ballistic Skill is low.
-Expected: each character's Reflex Shot chance tracks their own normal hit chance (higher for the
-high-Skill character, lower for the low-Skill one, both still dropping with range the same way a normal
-shot would), not a shared flat number: Reflex Shot is no longer skill-blind.
-
-**D5. Ends at your turn.** Nobody triggers it before your next turn.
-Expected: it's gone when your turn starts.
+**D4. Radius follows the weapon.** With a pistol, only an enemy within the pistol's range is eligible; with
+a long rifle, one farther out is too.
+Expected: an enemy beyond the active weapon's range is never picked.
 
 ## E. Overwatch
 
@@ -297,7 +270,7 @@ Expected: no overwatch; the enemy's turn ends as before.
 **G6. Not avoiding overwatch (RTO-T87, T88).** Put Overwatch down over the enemies' approach, then end
 your turn.
 Expected: enemies take the path they'd take anyway, walking into the cone and drawing its shots, instead
-of routing around it. Same for Reflex Shot circles (G8).
+of routing around it.
 
 **G6a. Enemy pets.** A fight with enemy animals or pets, ideally one with a ranged attack.
 Expected: they never use Reflex Shot, Overwatch or Suppression.
@@ -305,11 +278,10 @@ Expected: they never use Reflex Shot, Overwatch or Suppression.
 **G7. Allied NPCs.** In a fight with allied non-party units holding guns.
 Expected: they follow the same rules as enemies (G1–G5), against their own enemies. Watch for anything odd.
 
-**G8. Walking through Reflex Shot (RTO-T87, T88).** One hero casts Reflex Shot and another casts
-Overwatch with its cone over a different approach, both where enemies need to cross to reach the party;
-end your turn.
-Expected: an enemy whose shortest path crosses the Reflex Shot circle or the Overwatch cone walks straight
-through it rather than around it, and draws the shot.
+**G8. Walking through Overwatch (RTO-T87, T88).** A hero casts Overwatch with its cone over the enemies'
+approach, then ends the turn.
+Expected: an enemy whose shortest path crosses the cone walks straight through it rather than around it,
+and draws the shot. (Reflex Shot no longer arms a zone to route around, RTO-T111: see D instead.)
 
 **G9. Pinned enemy (RTO-T90).** Suppress a ranged enemy that has a hero in line of sight, then end your turn.
 Expected: on its turn it mostly stays on its square and shoots back from there (its hit chance reduced,
@@ -340,7 +312,7 @@ usable and costs 1 AP.
 Expected: casting Overwatch or Suppression costs 2 AP, not 1; Reflex Shot costs 1. Repeat with a Pistol
 or Basic weapon active: each of the three costs 1 AP.
 
-## K. Suppression, Overwatch and Reflex Shot as real attacks of opportunity (RTO-T50, T85, T94)
+## K. Suppression and Overwatch as real attacks of opportunity (RTO-T50, T85, T94)
 
 **K1. Talent/trait bonus.** With a character who has a talent, feat or weapon trait that specifically
 boosts attacks of opportunity (bonus to-hit or damage), cast Suppression and let the target move.
@@ -353,9 +325,9 @@ Expected: the overwatch shot's hit-chance or damage breakdown shows the attack-o
 to the "Overwatch" reach penalty (which is unchanged, see L1–L2). With 2 shots, the second (including a
 follow-up shot, E4c) shows it too. A normal shot from the same character on its own turn doesn't.
 
-**K3. Reflex Shot is one too (RTO-T94).** With the same character, let a Reflex Shot fire.
-Expected: the attack-of-opportunity bonus shows in its breakdown too, alongside the retained-aim scale
-(D2a, D4b).
+**K3. Reflex Shot is no longer one (RTO-T111).** With the same character, let a Reflex Shot fire.
+Expected: no attack-of-opportunity bonus in its breakdown: since RTO-T111 it's a direct cast on the
+caster's own turn, not a reactive trigger.
 
 ## L. Overwatch snap-shot penalty and the Overwatched debuff (RTO-T54, T87)
 
@@ -384,41 +356,35 @@ Expected: the Overwatched debuff is removed from everyone it covered within the 
 
 ## M. Tile-edge outline (RTO-T56, T63, T64, T68, T70, T76)
 
-**M1. Reflex Shot.** Cast Reflex Shot.
-Expected: thin yellow, 50%-transparent lines run along the tile edges of the circle (the weapon's range), on top of the
-game's own red highlight, with vertical connectors where the edge crosses a height change. They
-disappear when Reflex Shot fires, is interrupted, or your next turn starts.
-
-**M2. Overwatch.** Cast Overwatch at various reaches.
+**M1. Overwatch.** Cast Overwatch at various reaches.
 Expected: a thin blue, 50%-transparent tile-edge outline matches the cone exactly (a short wide cone or a long narrow one). It
 disappears when the overwatch runs out of shots, is cancelled or interrupted, or your next turn starts.
+(Reflex Shot has no aiming step and no armed zone since RTO-T111, so it never shows an outline.)
 
-**M3. Live preview.** Press Reflex Shot or Overwatch and move the cursor before clicking.
+**M3. Live preview.** Press Overwatch and move the cursor before clicking.
 Expected: the outline already tracks the live preview as it resizes, not just after you click to cast it.
 
 **M3a. Pausing while aiming.** While aiming (before clicking), hold the cursor still for several
 seconds, then move it again.
 Expected: the outline stays the whole time the ability is selected, however long the cursor sits still.
 
-**M3b. Cancelling.** Press Reflex Shot or Overwatch, move the cursor to preview it, then cancel
-(right-click, Escape, or select a different ability) without casting.
+**M3b. Cancelling.** Press Overwatch, move the cursor to preview it, then cancel (right-click, Escape, or
+select a different ability) without casting.
 Expected: the outline and the hit-chance overtips disappear on the next frame.
 
-**M4. Hit-chance overtips (RTO-T71, RTO-T80).** Aim Overwatch or Reflex Shot with enemies inside the area.
+**M4. Hit-chance overtips (RTO-T71, RTO-T80).** Aim Overwatch with enemies inside the cone.
 Expected: each enemy inside shows the game's own hit-chance gauge and damage range above its health
 bar (the same overtip a normal attack shows, centred on the unit), updated as the cursor moves: the
-game's hit chance for the weapon with our own effect applied (Overwatch's reach penalty, added; Reflex
-Shot's retained-aim fraction, scaling the gauge down as you turn away from the facing you'd pick). For
-Reflex Shot the damage range is also 33% of a normal shot's (RTO-T82), matching what the shot then rolls.
-Enemies outside the area show nothing.
+game's hit chance for the weapon with Overwatch's reach penalty added. Enemies outside the cone show
+nothing. (Reflex Shot has no aiming step to preview since RTO-T111.)
 
 ## N. Suppressed units lose a quarter of their hit chance (RTO-T86, T87)
 
-A Suppressed unit's final ranged hit chance, after every modifier (and after Reflex Shot's own retained-aim
-scale) and after the game's hit-chance cap, is reduced to 75%, rounded to the nearest whole number (.5
-rounds to even). RTO-T86 halved it, on the uncapped value; RTO-T87 eased it to 75% of the capped chance,
-so every shooter loses the same quarter. It isn't a line of its own in the breakdown: only the final
-chance changes. Melee and scatter attacks, and single shots at destructibles, are unchanged.
+A Suppressed unit's final ranged hit chance, after every modifier and after the game's hit-chance cap, is
+reduced to 75%, rounded to the nearest whole number (.5 rounds to even). RTO-T86 halved it, on the
+uncapped value; RTO-T87 eased it to 75% of the capped chance, so every shooter loses the same quarter. It
+isn't a line of its own in the breakdown: only the final chance changes. Melee and scatter attacks, and
+single shots at destructibles, are unchanged.
 
 **N1. Gauge (party member Suppressed).** Note a party member's hit chance at an enemy (e.g. 60%). Let an
 enemy suppress them (G4), then on their turn aim the same attack at the same enemy from the same square.
@@ -430,9 +396,9 @@ the combat log (e.g. 70%). Suppress that enemy, then let it shoot the same chara
 Expected: the combat log shows the shot rolled at three quarters of the earlier value (70% → 52; 52.5
 rounds to the even 52). A burst rolls every round at the reduced chance.
 
-**N3. Reflex Shot from a Suppressed unit.** A Suppressed unit with an active Reflex Shot fires it.
-Expected: the Reflex Shot chance (already scaled by the retained-aim fraction) is reduced to three
-quarters of that, the same rounding as N1-N2.
+**N3. Reflex Shot from a Suppressed unit.** A Suppressed unit casts Reflex Shot.
+Expected: the Reflex Shot's hit chance (unpenalized since RTO-T111) is reduced to three quarters of the
+unit's normal chance at that target, the same rounding as N1-N2.
 
 **N4. Melee and scatter unchanged.** A Suppressed unit makes a melee attack, then a scatter (cone or
 area) ranged attack.

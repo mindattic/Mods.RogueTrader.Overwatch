@@ -42,61 +42,21 @@
         "m_BuffToCaster": null
       },
       {
-        "$type": "0966a95df3bfa574e855a652cc54afa2, AbilityEffectOverwatch",
-        "name": "$AbilityEffectOverwatch$9d886abe7dfc47df93d6016ff5c3c2d0",
+        "$type": "66e032e5cf38801428940a1a0d14b946, AbilityEffectRunAction",
+        "name": "$AbilityEffectRunAction$9d886abe7dfc47df93d6016ff5c3c2d0",
         "m_Flags": 0,
         "PrototypeLink": {
           "guid": "",
           "name": ""
         },
         "m_Overrides": [],
-        "Mode": "Overwatch",
-        "HitsPerTarget": "HitOnce",
-        "m_AbilityOnTrigger": null,
-        "UseFirstWeaponAbility": true,
-        "ApplyingBuffs": [],
-        "MultipleIfHasFact": false,
-        "m_MultipleFact": null
-      },
-      {
-        "$type": "e6da52cf4bc945a1b3276a25991d7a68, WarhammerAbilityAttackDelivery",
-        "name": "$WarhammerAbilityAttackDelivery$fc135552b33c4b3ba8f835de3bea936d",
-        "m_Flags": 0,
-        "PrototypeLink": {
-          "guid": "",
-          "name": ""
-        },
-        "m_Overrides": [],
-        "WeaponAttack": "None",
-        "Special": "Pattern",
-        "m_IsProjectile": false,
-        "UseBestShootingPosition": false,
-        "ControlledScatter": false,
-        "m_PatternSpreadWithProjectile": false,
-        "AdditionalDamageInstancesCount": 0,
-        "m_PatternSettings": {
-          "Pattern": {
-            "m_Type": "Circle",
-            "m_Blueprint": null,
-            "m_Radius": 10,
-            "m_Angle": 0
-          },
-          "Targets": "Enemy",
-          "CastOnSameLevel": false,
-          "m_IgnoreLos": false,
-          "m_UseMeleeLos": false,
-          "m_IgnoreLevelDifference": false,
-          "m_Directional": false,
-          "CalculateAttackFromPatternCentre": false
-        },
-        "m_DisableWeaponAttackDamage": false,
-        "m_DisableDodgeForAlly": false,
-        "m_DisableOverpenetration": false,
-        "m_AutoHit": false,
-        "m_IsLosDefinedByPattern": false
+        "SavingThrowType": "Unknown",
+        "Actions": {
+          "Actions": []
+        }
       }
     ],
-    "Comment": "Reflex Shot: XCOM 2 overwatch. A 10-cell circle centred on the shooter (the clicked point only sets the facing); one shot at the first enemy that moves or acts inside, with an aim modifier for how far the shooter must turn.",
+    "Comment": "Reflex Shot (RTO-T111): ends the turn, then at once fires one real shot at a randomly chosen enemy in weapon range and line of sight - no facing, no waiting as a reaction. The mod's assembly (ReflexShot.cs) picks the target and fires it from a postfix on AbilityEffectRunAction.Apply, scoped to this ability; its Actions list is deliberately empty.",
     "m_DisplayName": {
       "m_Key": "d5d08e05-97c9-448b-a2c3-e20efd279883",
       "m_OwnerString": "27f7f769d0b94ab18fee0cde8a577a4d",
@@ -117,8 +77,8 @@
     },
     "m_AllowNonContextActions": false,
     "Type": "Weapon",
-    "Range": "Custom",
-    "CustomRange": 10,
+    "Range": "Personal",
+    "CustomRange": 0,
     "MinRange": 0,
     "ActionPointCost": 1,
     "AbilityParamsSource": "None",
@@ -126,7 +86,7 @@
     "VeilThicknessPointsToAdd": 1,
     "ParamsSkill": "SkillAthletics",
     "CooldownRounds": 0,
-    "CanTargetPoint": true,
+    "CanTargetPoint": false,
     "CanTargetEnemies": false,
     "CanTargetFriends": false,
     "CanTargetSelf": true,
@@ -139,13 +99,13 @@
     "EffectOnAlly": "None",
     "EffectOnEnemy": "Harmful",
     "m_Parent": null,
-    "Animation": "Directional",
+    "Animation": "None",
     "CastInOffHand": false,
     "UseOnMechadendrite": false,
     "UsedMechadendrite": "Utility",
     "m_TargetMapObjects": false,
     "IsFreeAction": false,
-    "ShouldTurnToTarget": true,
+    "ShouldTurnToTarget": false,
     "m_IsStratagem": false,
     "UsingInThreateningArea": "CannotUse",
     "UsingInOverwatchArea": "WillCauseAttack",

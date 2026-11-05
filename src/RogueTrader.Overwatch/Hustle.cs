@@ -141,7 +141,8 @@ internal static class Hustle_FirstTurnOnly
 }
 
 // Hustle's range is the distance to the farthest other party member, worked out fresh every time it's checked
-// (the ability's own Range: Unlimited is just a placeholder), the same seam ReflexShot_RangeFromWeapon uses.
+// (the ability's own Range: Unlimited is just a placeholder), the same seam Abilities_RangeFromActiveWeapon
+// uses to resolve Overwatch's and Suppression's range from the active weapon.
 [HarmonyPatch(typeof(RuleCalculateAbilityRange), nameof(RuleCalculateAbilityRange.OnTrigger))]
 internal static class Hustle_Range
 {

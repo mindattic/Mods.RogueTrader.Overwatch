@@ -28,7 +28,8 @@ namespace RogueTraderOverwatch;
 //   - it can shoot someone but every such enemy is in full cover: Suppression on the nearest one not already suppressed;
 //   - it can shoot someone in the open: nothing here, the normal attack runs;
 //   - it can shoot nobody, but an enemy is within weapon range + ApproachMargin cells: Overwatch aimed at the nearest
-//     one with 2+ AP (1 shot at 2 AP, 2 at 3+ with a 1-AP attack, RTO-T91), Reflex Shot with 1 AP (the circle covers every direction).
+//     one with 2+ AP (1 shot at 2 AP, 2 at 3+ with a 1-AP attack, RTO-T91), Reflex Shot with 1 AP (no aim needed
+//     since RTO-T111, it fires at a random enemy in range on cast).
 internal static class EnemyAi
 {
     public const int ApproachMargin = 8;
@@ -112,21 +113,11 @@ internal static class EnemyAi
                 return (overwatch, wrapper);
         }
 
+        // Reflex Shot has no facing to pick anymore (RTO-T111: it fires at a random enemy in range on cast), so
+        // it's a self-cast, same as the player's own.
         var reflex = Usable(unit, "27f7f769d0b94ab18fee0cde8a577a4d");
         if (reflex != null)
         {
-            // Face the nearest enemy, the direction it's expected from (the facing sets Reflex Shot's aim modifier).
-            var toward = nearest.Unit.Position - unit.Position;
-            toward.y = 0;
-            // The nearest cell that way is often the cover the enemy hides behind, so walk out until a point is valid,
-            // then fall back to the unit itself (facing its current way).
-            if (toward.sqrMagnitude > 0.01f)
-                for (int cells = 1; cells <= 10; cells++)
-                {
-                    var facing = new TargetWrapper(unit.Position + toward.normalized * (cells * GraphParamsMechanicsCache.GridCellSize));
-                    if (reflex.CanTarget(facing))
-                        return (reflex, facing);
-                }
             var self = new TargetWrapper(unit);
             if (reflex.CanTarget(self))
                 return (reflex, self);
@@ -144,10 +135,10 @@ internal static class EnemyAi
 }
 
 // The AI's path planning treats every active overwatch area as threatened ground and routes around it, knowing about
-// it whether or not it can see the shooter: a Reflex Shot circle (the weapon's whole range, every direction) or an
-// Overwatch cone would just be a no-go zone that never fires. Take this mod's overwatchers out of the threat map, so
-// units move as they would anyway and get caught by the shots (RTO-T87, T88). The game's own overwatches are left as
-// they are.
+// it whether or not it can see the shooter: an Overwatch cone would just be a no-go zone that never fires. Take this
+// mod's overwatchers out of the threat map, so units move as they would anyway and get caught by the shots (RTO-T87,
+// T88). Reflex Shot no longer arms a zone at all (RTO-T111), so it was never a concern here. The game's own
+// overwatches are left as they are.
 [HarmonyPatch(typeof(AiBrainHelper), nameof(AiBrainHelper.GatherThreatsData))]
 internal static class EnemyAi_OverwatchThreats
 {
