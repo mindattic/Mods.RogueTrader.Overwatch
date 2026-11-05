@@ -65,8 +65,10 @@ and enables it; start (or restart) the game. Every build prints the installed DL
 this build or a stale one — a restart after that line is always enough. `-c Release` also writes the
 upload, `dist/RogueTrader.Overwatch-<version>.zip`. Override `GameDir` or `GameDataDir` with `-p:Name=value`.
 
-The installed folder must keep its empty `Bundles` subfolder: the game's loader lists it without
-checking it exists, and without it no blueprint in the mod loads.
+The installed folder must keep its `Bundles` subfolder: the game's loader lists it without checking
+it exists, and without it no blueprint in the mod loads. It ships a tracked placeholder file
+(`mod/Bundles/.keep`) rather than staying truly empty, because a truly empty folder in the zip gets
+dropped by file-based mod managers like Vortex, which deploy by linking individual files (RTO-T104).
 
 | Path | Holds |
 |---|---|
@@ -83,7 +85,12 @@ expected result, and what to look for in `Player.log`.
 
 ## Status
 
-**4.0.0: ready for in-game testing, not released.** Since 3.0.0:
+**5.0.0: ready for in-game testing, not released.** Since 4.0.0:
+- Fixed a Vortex-deployed install silently dropping every blueprint (abilities, buffs) because Vortex
+  strips the empty `Bundles` folder the game's loader requires; the folder now ships a real file so it
+  survives deployment (RTO-T104).
+
+Since 3.0.0:
 - Reflex Shot and Overwatch grey out once the weapon they'd fire has no rounds chambered, the same as
   any other ammo-gated ability (RTO-T93).
 - Reflex Shot's triggered shot is now a real attack of opportunity too, like Overwatch's and
@@ -95,8 +102,8 @@ expected result, and what to look for in `Player.log`.
   a quarter-turn away or more, so a skilled shooter's reflexes are worth more than a flat number ever
   let them be (RTO-T96).
 
-Work through TESTING.md before uploading `dist/RogueTrader.Overwatch-4.0.0.zip` with
+Work through TESTING.md before uploading `dist/RogueTrader.Overwatch-5.0.0.zip` with
 [docs/NEXUS_PAGE.md](docs/NEXUS_PAGE.md).
 
-Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0, 4.0.0): bump `Version` in
+Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0, 4.0.0, 5.0.0): bump `Version` in
 `mod/OwlcatModificationManifest.json`, which names the zip.

@@ -14,7 +14,8 @@
     <RootNamespace>RogueTraderOverwatch</RootNamespace>
     <ModSource>$(MSBuildThisFileDirectory)..\..\mod</ModSource>
     <ModFolderName>RogueTrader.Overwatch</ModFolderName>
-    <!-- An Owlcat-format mod: RogueTrader.OwlcatMod.targets checks its Bundles folder and settings at build. -->
+    <!-- An Owlcat-format mod: RogueTrader.OwlcatMod.targets guarantees its Bundles folder and checks its settings
+         at build. mod/Bundles/.keep also ships the folder as a real, tracked file (RTO-T104, RTS-T9). -->
     <OwlcatModification>true</OwlcatModification>
     <ModInstallDir>$(GameDataDir)\Modifications\$(ModFolderName)</ModInstallDir>
     <ModVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(ModSource)\OwlcatModificationManifest.json')), '"Version":\s*"([^"]+)"').Groups[1].Value)</ModVersion>
@@ -24,7 +25,6 @@
     <ModFile Include="$(ModSource)\**\*" />
     <!-- Only the in-game icons (the names Icons.cs maps); Header.png and Logo.png are for the Nexus page. -->
     <IconName Include="ReflexShot;Overwatch;OverwatchShots;Suppression;Suppressed" />
-    <PackageDirectory Include="Bundles" />
     <IconFile Include="@(IconName->'$(MSBuildThisFileDirectory)..\..\assets\%(Identity).png')" />
   </ItemGroup>
 
@@ -35,8 +35,6 @@
     <Copy SourceFiles="@(ModFile)" DestinationFiles="@(ModFile->'$(ModInstallDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModInstallDir)\Assemblies" />
     <Copy SourceFiles="@(IconFile)" DestinationFolder="$(ModInstallDir)\Icons" />
-    <!-- The game's loader lists Bundles\ without checking it exists; a missing folder aborts loading every blueprint. -->
-    <MakeDir Directories="$(ModInstallDir)\Bundles" />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\tools\Enable-Mod.ps1&quot; -GameDataDir &quot;$(GameDataDir)&quot; -Name $(ModFolderName)" />
     <Message Importance="high" Text="Installed to $(ModInstallDir)" />
     <!-- Proof the install really landed: the installed DLL's write time, so it's obvious in the build output
