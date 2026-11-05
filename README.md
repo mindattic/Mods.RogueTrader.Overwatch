@@ -85,7 +85,7 @@ expected result, and what to look for in `Player.log`.
 
 ## Status
 
-**5.0.0: ready for in-game testing, not released.** Since 4.0.0:
+**6.0.0: ready for in-game testing, not released.** Since 4.0.0:
 - Fixed a Vortex-deployed install silently dropping every blueprint (abilities, buffs) because Vortex
   strips the empty `Bundles` folder the game's loader requires; the folder now ships a real file so it
   survives deployment (RTO-T104).
@@ -106,8 +106,8 @@ Since 3.0.0:
   a quarter-turn away or more, so a skilled shooter's reflexes are worth more than a flat number ever
   let them be (RTO-T96).
 
-Work through TESTING.md before uploading `dist/RogueTrader.Overwatch-5.0.0.zip` with
+Work through TESTING.md before uploading `dist/RogueTrader.Overwatch-6.0.0.zip` with
 [docs/NEXUS_PAGE.md](docs/NEXUS_PAGE.md).
 
-Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0, 4.0.0, 5.0.0): bump `Version` in
+Versions go up a whole number each release (1.0.0, 2.0.0, 3.0.0, 4.0.0, 5.0.0, 6.0.0): bump `Version` in
 `mod/OwlcatModificationManifest.json`, which names the zip.
