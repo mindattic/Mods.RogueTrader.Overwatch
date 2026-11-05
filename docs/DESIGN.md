@@ -250,7 +250,9 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
   puts it on a different square, one shot per suppressor is queued, unless the target's current
   command already drew one. A push has no command of the target's own, so it counts under the command of
   whoever's turn it is (one shot per pushing command); a displacement neither explains draws at most one
-  shot a second. A postfix on `OverwatchController.Tick` fires the queue as `UnitOverwatchAttackParams`,
+  shot per `Tick` (RTO-T105: was a one-shot-a-second `Time.time` throttle, but wall-clock time isn't
+  synced between multiplayer peers, so host and client could reach different verdicts and desync).
+  A postfix on `OverwatchController.Tick` fires the queue as `UnitOverwatchAttackParams`,
   the engine's own out-of-turn path, so hit chance and damage are normal. The ability data is a fresh
   `Clone(false)` of the weapon's attack, not the shared instance the unit also fires its normal shots
   with, flagged `IsAttackOfOpportunity = true` (RTO-T50) so feats and traits that key off that flag

@@ -35,7 +35,10 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     // The square each suppressed target holds, and the command that already drew its shot for leaving it.
     private readonly Dictionary<BaseUnitEntity, CustomGridNodeBase> m_Anchors = new Dictionary<BaseUnitEntity, CustomGridNodeBase>();
     private readonly Dictionary<BaseUnitEntity, object> m_ShotForCommand = new Dictionary<BaseUnitEntity, object>();
-    private readonly Dictionary<BaseUnitEntity, float> m_LastUnexplainedShot = new Dictionary<BaseUnitEntity, float>();
+    // Debounces an unexplained displacement (no owning command) to one queued shot per Tick, cleared there:
+    // Time.time isn't synced between multiplayer peers, so gating a real (hashed-state) shot by wall-clock
+    // elapsed time let host and client reach different verdicts and desync (RTO-T105).
+    private readonly HashSet<BaseUnitEntity> m_FiredUnexplainedThisTick = new HashSet<BaseUnitEntity>();
     private bool m_NeedsScan = true;
     private readonly List<(BaseUnitEntity Caster, BaseUnitEntity Target)> m_ShotsToFire = new List<(BaseUnitEntity, BaseUnitEntity)>();
     private readonly Dictionary<BaseUnitEntity, float> m_NextCosmeticShot = new Dictionary<BaseUnitEntity, float>();
@@ -82,7 +85,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
             {
                 m_Anchors.Remove(target);
                 m_ShotForCommand.Remove(target);
-                m_LastUnexplainedShot.Remove(target);
+                m_FiredUnexplainedThisTick.Remove(target);
             }
         }
         catch (Exception ex)
@@ -106,7 +109,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
     {
         m_Anchors.Clear();
         m_ShotForCommand.Clear();
-        m_LastUnexplainedShot.Clear();
+        m_FiredUnexplainedThisTick.Clear();
         m_ShotsToFire.Clear();
         m_NextCosmeticShot.Clear();
         m_Pose.Clear();
@@ -129,7 +132,7 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
             if (anchor == null || !TurnController.IsInTurnBasedCombat())
                 return;
             // Once per command that moves it: its own, or for a push (no command of its own) the command of whoever's
-            // turn it is. A displacement neither explains is limited to one shot a second.
+            // turn it is. A displacement neither explains is limited to one shot per Tick (RTO-T105).
             object cause = target.Commands.Current ?? (Game.Instance.TurnController.CurrentUnit as BaseUnitEntity)?.Commands.Current;
             if (cause != null)
             {
@@ -139,9 +142,8 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
             }
             else
             {
-                if (m_LastUnexplainedShot.TryGetValue(target, out var last) && Time.time - last < 1f)
+                if (!m_FiredUnexplainedThisTick.Add(target))
                     return;
-                m_LastUnexplainedShot[target] = Time.time;
             }
             foreach (var caster in Suppressors(target))
                 m_ShotsToFire.Add((caster, target));
@@ -169,10 +171,13 @@ internal sealed class Suppression : IUnitBuffHandler, IEntityPositionChangedHand
         {
             m_ShotsToFire.Clear();
             m_NextCosmeticShot.Clear();
+            m_FiredUnexplainedThisTick.Clear();
             foreach (var caster in m_Pose.Keys.ToList())
                 ReleasePose(caster);
             return;
         }
+        // A fresh debounce window for this tick's own HandleEntityPositionChanged events, not the last one's.
+        m_FiredUnexplainedThisTick.Clear();
         ScanIfNeeded();
         FireQueuedShots();
         CosmeticFire();

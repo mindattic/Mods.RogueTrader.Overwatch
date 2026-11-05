@@ -89,6 +89,10 @@ expected result, and what to look for in `Player.log`.
 - Fixed a Vortex-deployed install silently dropping every blueprint (abilities, buffs) because Vortex
   strips the empty `Bundles` folder the game's loader requires; the folder now ships a real file so it
   survives deployment (RTO-T104).
+- Fixed a multiplayer desync: Suppression's shot for a push or knockback with no owning command was
+  throttled by wall-clock time (`Time.time`), which isn't synced between peers, so host and client could
+  queue a different number of real attacks near the one-second boundary. Throttled by simulation tick
+  instead (RTO-T105).
 
 Since 3.0.0:
 - Reflex Shot and Overwatch grey out once the weapon they'd fire has no rounds chambered, the same as
