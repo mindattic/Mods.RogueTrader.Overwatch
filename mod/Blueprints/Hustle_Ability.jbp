@@ -1,0 +1,145 @@
+{
+  "AssetId": "fb73730b0fdb4689939fed3edd2af32a",
+  "Data": {
+    "$type": "da11db195c86e0d4dae17a2c03a4ba9a, BlueprintAbility",
+    "PrototypeLink": "",
+    "m_Overrides": [],
+    "Components": [
+      {
+        "$type": "c53b6a74192ad9d43818c98797b7e0de, AbilityCasterHasNoFacts",
+        "name": "$AbilityCasterHasNoFacts$7a8a0a2e9aa14b6a9a0c4e5f6a2b7c1d",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "m_Facts": []
+      },
+      {
+        "$type": "e627a85beb904bf2bd6608ecdbcbadbc, AbilityCustomMoveToTarget",
+        "name": "$AbilityCustomMoveToTarget$3f2a8c6e9d1b4e7a8f0c5d2e3b4a6c7d",
+        "m_Flags": 0,
+        "PrototypeLink": {
+          "guid": "",
+          "name": ""
+        },
+        "m_Overrides": [],
+        "m_OverrideMaxSpeed": false,
+        "m_MaxSpeedOverride": 10.0,
+        "m_ActionsOnTargetAfterMoved": {
+          "Actions": []
+        },
+        "m_ActionsAfterMoved": {
+          "Actions": [
+            {
+              "$type": "d1933e412cc64482ae7990aaacdf44a8, WarhammerContextActionRestoreActionPoints",
+              "name": "$WarhammerContextActionRestoreActionPoints$5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b",
+              "ActionPoints": {
+                "ValueType": "Simple",
+                "Value": 0,
+                "ValueRank": "Default",
+                "ValueShared": "Damage",
+                "Property": "None",
+                "m_CustomProperty": null,
+                "PropertyName": "Value1"
+              },
+              "MovePoints": {
+                "ValueType": "Simple",
+                "Value": 0,
+                "ValueRank": "Default",
+                "ValueShared": "Damage",
+                "Property": "None",
+                "m_CustomProperty": null,
+                "PropertyName": "Value1"
+              },
+              "ActionPointsToMax": false,
+              "MovePointsToMax": true,
+              "IgnoreMovePointsMaximum": false,
+              "IgnoreActionPointsMaximum": false
+            }
+          ]
+        },
+        "DisableAttacksOfOpportunity": false,
+        "DisableOnlyIfHasFact": false,
+        "m_PassThroughAllUnits": false,
+        "m_CasterMustStandInTarget": true,
+        "m_CasterMustStandNearTarget": false,
+        "IgnoreObstacles": false,
+        "AllowNotStraightMovement": false,
+        "m_CheckedFact": null
+      }
+    ],
+    "Comment": "Hustle: once per battle, only on the caster's own first turn, move up to the distance to the farthest other party member, free of AP and MP (RTO-T109). The mod's assembly gates it to the first turn (Hustle.cs) and sets its range dynamically (RuleCalculateAbilityRange postfix).",
+    "m_DisplayName": {
+      "m_Key": "6643e6bc-fbab-40fd-ab74-b463b975d747",
+      "m_OwnerString": "fb73730b0fdb4689939fed3edd2af32a",
+      "m_OwnerPropertyPath": "m_DisplayName",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Description": {
+      "m_Key": "af6396d4-53ed-4c38-8db5-9a6e38ab9aa7",
+      "m_OwnerString": "fb73730b0fdb4689939fed3edd2af32a",
+      "m_OwnerPropertyPath": "m_Description",
+      "m_JsonPath": "",
+      "Shared": null
+    },
+    "m_Icon": {
+      "guid": "cc7f3655ce762a24f924868555d76bda",
+      "fileid": 21300000
+    },
+    "m_AllowNonContextActions": false,
+    "Type": "Spell",
+    "Range": "Unlimited",
+    "CustomRange": 0,
+    "MinRange": 0,
+    "ActionPointCost": 0,
+    "AbilityParamsSource": "None",
+    "PsychicPower": "Minor",
+    "VeilThicknessPointsToAdd": 1,
+    "ParamsSkill": "SkillAthletics",
+    "CooldownRounds": 0,
+    "CanTargetPoint": true,
+    "CanTargetEnemies": false,
+    "CanTargetFriends": false,
+    "CanTargetSelf": false,
+    "Hidden": false,
+    "HiddenInUI": false,
+    "DisableLog": false,
+    "DisableBestShootingPosition": false,
+    "NeedEquipWeapons": false,
+    "NotOffensive": true,
+    "ShowInDialogue": false,
+    "IsStarshipAbility": false,
+    "EffectOnAlly": "None",
+    "EffectOnEnemy": "None",
+    "m_Parent": null,
+    "Animation": "None",
+    "CastInOffHand": false,
+    "UseOnMechadendrite": false,
+    "UsedMechadendrite": "Utility",
+    "m_TargetMapObjects": false,
+    "IsFreeAction": false,
+    "ShouldTurnToTarget": true,
+    "SyncRotationAndAttack": false,
+    "SyncRotationDelay": 0.0,
+    "m_IsStratagem": false,
+    "UsingInThreateningArea": "CanUseWithoutAOO",
+    "UsingInOverwatchArea": "WillCauseAttack",
+    "CombatStateRestriction": "InCombatOnly",
+    "m_AbilityGroups": [],
+    "MaterialComponent": {
+      "m_Item": null,
+      "Count": 1
+    },
+    "ResourceAssetIds": [],
+    "m_FXSettings": null,
+    "m_AbilityTag": "None",
+    "m_CombatHudCommandsOverride": null,
+    "Author": "Unknown"
+  },
+  "Meta": {
+    "ShadowDeleted": false
+  }
+}

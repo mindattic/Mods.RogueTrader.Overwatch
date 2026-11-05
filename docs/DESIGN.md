@@ -3,9 +3,11 @@
 ## Abilities
 
 ### Shared rules
-- Party members always have the three buttons on their ability bar (slots 8–10 by default), greyed
-  out unless the active weapon set holds a ranged weapon. Enemies get them on any ranged weapon
-  (Category Pistol, Basic or Heavy, not Thrown) through its weapon slots. See "Who gets the buttons".
+- Party members always have Reflex Shot, Overwatch and Suppression on their ability bar, greyed out
+  unless the active weapon set holds a ranged weapon, plus Hustle (RTO-T109), which needs no weapon;
+  the whole set sits at the end of row 2 by default (RTO-T112). Enemies get the first three on any
+  ranged weapon (Category Pistol, Basic or Heavy, not Thrown) through its weapon slots, never Hustle.
+  See "Who gets the buttons".
 - Being pushed counts as moving for all three: the engine's overwatch reacts to any position
   change (`OverwatchController.HandleEntityPositionChanged`), so a push into Reflex Shot's circle or
   Overwatch's cone draws fire, and Suppression fires when its target is pushed off its square.
@@ -289,6 +291,32 @@ range (RTO-T62; no fixed size). It fires once at the first enemy that moves or a
 Dropped: Lane Overwatch (RTO-T9). Kill Zone (RTO-T7) and the drag-to-size cone (RTO-T12) merged
 into Overwatch.
 
+### Hustle (RTO-T109)
+Free of AP and MP, usable only on the caster's own first turn of a battle, once per battle: move up
+to the grid-cell distance to whichever other current party member (`Game.Instance.Player.Party`) is
+farthest away, so a character who starts a fight far from the group isn't penalized for it.
+- **Range (`Hustle.RangeFor`):** the farthest other party member's `CellDistanceTo` the caster's own
+  node (`CurrentUnwalkableNode`), the same pattern `OverwatchDebuff.ReachOf` uses for a cone's reach.
+  Worked out fresh every time the ability's range is checked, by a postfix on
+  `RuleCalculateAbilityRange.OnTrigger` (`Hustle_Range`); the blueprint's own `Range: Unlimited` is only
+  a placeholder, the same role `ReflexShot_RangeFromWeapon` plays for Reflex Shot.
+- **Free of cost:** `AbilityCustomMoveToTarget`'s `m_ActionsAfterMoved` runs a
+  `WarhammerContextActionRestoreActionPoints` with `MovePointsToMax: true` right after the move, so the
+  Movement Points it spent come back; the ability's own `ActionPointCost` is 0 and it doesn't end the
+  turn, so the character can still act normally afterward.
+- **First turn only, once per battle:** the blueprint's `AbilityCasterHasNoFacts` carries an empty fact
+  list on purpose (its stock check would always pass); a prefix scoped to Hustle's own ability
+  (`Hustle_FirstTurnOnly`) replaces it with the real gate. A unit's first turn is tracked in memory, not
+  with a marker buff: `PartUnitCombatState.PrepareForNewTurn` fires once per unit's own turn start (not
+  once per round), so the *second* time it fires for a unit in one battle, that unit is marked past its
+  first turn (`Hustle.PastFirstTurn`). `JoinCombat`/`LeaveCombat` clear the tracking for that unit, so
+  rejoining combat - a reinforcement, or leaving and coming back - gives it a first turn again.
+- Kept out of `Abilities.All`/`Abilities.IsOurs` on purpose, in a separate `Abilities.BarPlaced` list
+  instead (see "Placement" below): `All` also scopes `Abilities_ActionPointCostByWeaponSize`, which
+  would otherwise charge Hustle a Heavy-weapon AP surcharge it was never meant to have.
+- Granted the same way as the other three: added to `Overwatch_PartyFeature`'s `AddFacts` (Main.cs's
+  `PartyGrant`), so every non-pet party member has it from the start, no weapon required.
+
 ### Enemy AI (RTO-T11)
 Enemies get the buttons through `CommonMobFact`, and the AI considers every ability a unit has
 (`DecisionContext.GetSortedAbilityList`). Left alone it sorts end-turn abilities last
@@ -349,8 +377,8 @@ saves get it too.
 **Party: their own abilities, on the ability bar (RTO-T18).** Weapon-slot abilities only show in the
 weapon's section and vanish with the weapon, and the bar's auto-fill (`PartUnitUISettings.TryToInitialize`)
 skips them. So `PartyGrant` (Main.cs) gives every non-pet character in `Player.AllCharacters` (on area load and on
-recruit) `Overwatch_PartyFeature`, an `AddFacts` of the three abilities, and removes `Overwatch_Feature`
-from anyone an earlier build gave it to.
+recruit) `Overwatch_PartyFeature`, an `AddFacts` of Reflex Shot, Overwatch, Suppression and Hustle (RTO-T109),
+and removes `Overwatch_Feature` from anyone an earlier build gave it to.
 - **Greyed out without a gun:** every ability has `AbilityCasterHasWeaponWithRangeType: Ranged`, which
   checks the active set's main hand, off hand and extra limbs. The bar re-reads availability on weapon-set
   swaps (`IUnitActiveEquipmentSetHandler`) and when the inventory and other full-screen windows close.
@@ -363,11 +391,13 @@ from anyone an earlier build gave it to.
   scoped to our three abilities only (`Abilities.IsOurs(OwnerBlueprint)`), redoes the same check with the
   empty-limb case skipped instead of dereferenced; every other ability in the game keeps hitting the
   original, unpatched method. Out of combat they're unusable (`InCombatOnly`).
-- **Placement** (`ActionBar.cs`): slots 8–10 of the first 10-slot row (the bar is
-  `PartUnitUISettings.Slots`), else the free slots among the last three of row 2, then row 3, else the
-  first free slot. Runs on grant and as a prefix on `PartUnitUISettings.TryToInitialize`, which the bar
-  calls just before reading its slots, whether or not the game's auto-fill setting is on. An ability the
-  player removed from the bar (`m_RemovedFromActionBar`) stays off.
+- **Placement** (`ActionBar.cs`, RTO-T112): the last slots of row 2 (the bar is `PartUnitUISettings.Slots`),
+  a window sized to the whole granted set (`Abilities.BarPlaced`: Reflex Shot, Overwatch, Suppression,
+  Hustle - slots 16-20 for 4, growing as more are added), else the first free slot anywhere. Runs on
+  grant and as a prefix on `PartUnitUISettings.TryToInitialize`, which the bar calls just before reading
+  its slots, whether or not the game's auto-fill setting is on. An ability the player removed from the
+  bar (`m_RemovedFromActionBar`) stays off. Previously slots 8-10 of row 1, then the last three of row 2,
+  then row 3.
 - **Range:** a character-owned ability has `AbilityData.Weapon == null`, so `Range: Weapon` resolved to
   nothing. A postfix on `RuleCalculateAbilityRange.OnTrigger` uses the active ranged weapon's attack range
   instead; Overwatch's cone cap and Suppression's target range follow it.
@@ -410,4 +440,5 @@ the mod's `Icons/` folder. After the game loads the mod's blueprints
 (`OwlcatModification.ApplyContent`), `Icons.cs` turns each into a `Sprite` and sets the blueprint's
 private `BlueprintMechanicEntityFact.m_Icon`, so no Unity asset bundle is needed. The `m_Icon`
 references in the `.jbp` files are game sprites that stay as fallbacks if a PNG is missing. Files:
-`ReflexShot`, `Overwatch`, `OverwatchShots` (shots-left buff), `Suppression`, `Suppressed` (debuff).
+`ReflexShot`, `Overwatch`, `OverwatchShots` (shots-left buff), `Suppression`, `Suppressed` (debuff),
+`Hustle`.

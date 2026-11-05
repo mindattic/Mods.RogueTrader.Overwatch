@@ -35,6 +35,12 @@
     },
     "640228ad-add2-44c5-a92a-9baaaceb3c43": {
       "Text": "Standing in an Overwatch cone. Each rank is one point of penalty to the hit chance of a shot from that cone (1 to 15, growing with how far the cone reaches), on top of its normal range penalty."
+    },
+    "6643e6bc-fbab-40fd-ab74-b463b975d747": {
+      "Text": "Hustle"
+    },
+    "af6396d4-53ed-4c38-8db5-9a6e38ab9aa7": {
+      "Text": "Free, costs no Action or Movement Points. Usable only on this character's own first turn of a battle, once per battle. Move up to the distance to whichever other party member is currently farthest away, so you're never penalized for starting a fight far from the group."
     }
   }
 }

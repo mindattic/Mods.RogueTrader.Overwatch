@@ -21,6 +21,7 @@ internal static class Icons
         ["OverwatchShots"] = "e5ce47452a6d47d78e88178f4ee7bba5",
         ["Suppression"] = "5db3949e7bf544bcb10cc3a2d51eb9ea",
         ["Suppressed"] = "c6af42a8c37040a49f86559e80959c5f",
+        ["Hustle"] = "fb73730b0fdb4689939fed3edd2af32a",
     };
 
     private static readonly AccessTools.FieldRef<BlueprintMechanicEntityFact, Sprite> IconField =

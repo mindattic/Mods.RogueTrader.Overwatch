@@ -30,6 +30,11 @@ internal static class Abilities
 
     public static readonly string[] All = { ReflexShot, Overwatch, Suppression };
 
+    // Every ability this mod puts on the party's own ability bar (ActionBar.cs), including ones kept out of
+    // All/IsOurs because they don't share All's weapon/ammo/AP-cost rules (Hustle: free of AP, never taxed a
+    // Heavy-weapon surcharge).
+    public static readonly string[] BarPlaced = { ReflexShot, Overwatch, Suppression, Hustle.AbilityGuid };
+
     public static bool IsOurs(BlueprintAbility blueprint) => blueprint != null && Array.IndexOf(All, blueprint.AssetGuid) >= 0;
 
     public static bool IsOurs(AbilityData ability) => IsOurs(ability?.Blueprint);

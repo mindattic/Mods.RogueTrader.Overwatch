@@ -121,6 +121,15 @@ _Nothing recorded yet._
 | RTO-T98 | 2026-10-31 | chore | closed | Bump to 4.0.0: version manifest, README Status/changelog, Nexus page version/changelog/description/checklist, matching the mechanics shipped since 3.0.0 (T93, T94, T96) | mod/OwlcatModificationManifest.json, README.md, docs/NEXUS_PAGE.md: version 4.0.0, fresh changelog for T93/T94/T96, fixed stale checklist/BBCode lines claiming Reflex Shot isn't an attack of opportunity or still uses a flat 33 base |
 | RTO-T99 | 2026-10-31 | chore | closed | Add 20261029174655_1.jpg, 20261029174700_1.jpg, 20261029174711_1.jpg, 20261029174715_1.jpg, 20261029174836_1.jpg, 20261029174845_1.jpg, 20261029174849_1.jpg | — |
 | RTO-T100 | 2026-11-01 | chore | closed | Rename repo to Mods.RogueTrader.Overwatch for mod organization (GitHub + folder + refs) | 3299d214639575f2d3570e103beac6af47a32f0c |
+| RTO-T101 | 2026-11-02 | docs | open | Adopt MindAttic.Agency docs-site pipeline, publish README to GitHub Pages (HOUSE-LAW-14) | — |
+| RTO-T102 | 2026-11-02 | fix | closed | Bughunt sweep, two passes: find and fix real bugs across tracked source (user request 2026-11-02) | — |
+| RTO-T103 | 2026-11-02 | fix | closed | Fix the open items the 2026-11-02 bughunt left for decision (manifest Repository link) | — |
 | RTO-T104 | 2026-11-04 | fix | closed | Vortex deploy drops the empty Bundles folder again, so blueprints silently fail to load (regression on RTO-T22) | dad9a6e |
 | RTO-T105 | 2026-11-04 | fix | closed | Suppression desyncs (reported 2026-11-04): investigate and fix | 05fe06e |
+| RTO-T106 | 2026-11-04 | fix | open | Overwatch doesn't activate with a sniper rifle equipped (reported 2026-11-04) | — |
+| RTO-T107 | 2026-11-04 | fix | open | Overwatch cone outline should use the same 3D-look lines as Reflex Shot's circle | — |
 | RTO-T108 | 2026-11-05 | chore | closed | Bump to 6.0.0 and rebuild dist zip (user request 2026-11-05) | d561deb |
+| RTO-T109 | 2026-11-05 | feature | open | Add Hustle: once-per-battle move ability, range = distance to furthest party member | — |
+| RTO-T110 | 2026-11-05 | feature | open | Add HunkDown: skip next turn, regenerate HP by cover type at the end, boosted Deflection while active | — |
+| RTO-T111 | 2026-11-05 | feature | open | Reflex Shot fires immediately at end of turn, at a random target in range, instead of waiting as an aimed-facing reaction | — |
+| RTO-T112 | 2026-11-05 | feature | open | Move all granted-to-party abilities to the end of the 2nd action bar row | — |

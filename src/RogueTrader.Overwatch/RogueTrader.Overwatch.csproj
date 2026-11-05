@@ -24,7 +24,7 @@
   <ItemGroup>
     <ModFile Include="$(ModSource)\**\*" />
     <!-- Only the in-game icons (the names Icons.cs maps); Header.png and Logo.png are for the Nexus page. -->
-    <IconName Include="ReflexShot;Overwatch;OverwatchShots;Suppression;Suppressed" />
+    <IconName Include="ReflexShot;Overwatch;OverwatchShots;Suppression;Suppressed;Hustle" />
     <IconFile Include="@(IconName->'$(MSBuildThisFileDirectory)..\..\assets\%(Identity).png')" />
   </ItemGroup>
 

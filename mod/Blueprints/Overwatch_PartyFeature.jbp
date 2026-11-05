@@ -17,7 +17,8 @@
         "m_Facts": [
           "!bp_27f7f769d0b94ab18fee0cde8a577a4d",
           "!bp_b5855687981e4ba9a7dfc8c4af03229f",
-          "!bp_5db3949e7bf544bcb10cc3a2d51eb9ea"
+          "!bp_5db3949e7bf544bcb10cc3a2d51eb9ea",
+          "!bp_fb73730b0fdb4689939fed3edd2af32a"
         ],
         "Dummy": null,
         "DoNotRestoreMissingFacts": false,
@@ -27,7 +28,7 @@
       }
     ],
     "Author": "Unknown",
-    "Comment": "Gives party members Reflex Shot, Overwatch and Suppression as their own abilities, so they sit on the ability bar and grey out without a ranged weapon. Granted by the mod's assembly (PartyGrant).",
+    "Comment": "Gives party members Reflex Shot, Overwatch, Suppression and Hustle as their own abilities, so they sit on the ability bar (Reflex Shot/Overwatch/Suppression grey out without a ranged weapon). Granted by the mod's assembly (PartyGrant).",
     "m_DisplayName": {
       "m_Key": "",
       "m_OwnerString": "",

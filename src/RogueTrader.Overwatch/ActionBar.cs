@@ -13,14 +13,15 @@ using Kingmaker.UnitLogic.Progression.Features;
 
 namespace RogueTraderOverwatch;
 
-// Puts a party member's Reflex Shot, Overwatch and Suppression on the ability bar: slots 8-10 of the first row,
-// else the last three slots of row 2, then row 3, else the first free slot. Runs whether or not the game's
-// "auto-fill action bar" setting is on, and leaves off any the player removed from the bar.
+// Puts a party member's granted abilities (Reflex Shot, Overwatch, Suppression, Hustle, ...) on the ability
+// bar: the last slots of row 2 (RTO-T112; sized to the whole set, so it's slots 16-20 for 5 abilities), else
+// the first free slot anywhere. Runs whether or not the game's "auto-fill action bar" setting is on, and
+// leaves off any the player removed from the bar.
 [HarmonyPatch(typeof(PartUnitUISettings), nameof(PartUnitUISettings.TryToInitialize))]
 internal static class ActionBar
 {
     private const int RowSize = 10;
-    private const int PreferredRows = 3;
+    private const int TargetRow = 1;
 
     private static readonly FieldInfo RemovedField = AccessTools.Field(typeof(PartUnitUISettings), "m_RemovedFromActionBar");
     private static readonly MethodInfo ContainsMethod = AccessTools.Method(RemovedField.FieldType, "Contains");
@@ -45,7 +46,7 @@ internal static class ActionBar
     {
         var settings = unit.UISettings;
         var missing = new List<Kingmaker.UnitLogic.Abilities.Ability>();
-        foreach (var guid in Abilities.All)
+        foreach (var guid in Abilities.BarPlaced)
         {
             var blueprint = ResourcesLibrary.TryGetBlueprint<BlueprintAbility>(guid);
             var ability = blueprint == null ? null : unit.Abilities.GetAbility(blueprint);
@@ -56,11 +57,15 @@ internal static class ActionBar
         if (missing.Count == 0)
             return;
 
+        // The very end of row 2, sized to the whole granted set, not just what's missing right now: a
+        // character who already has some of these (an earlier save, or an earlier grant) keeps the same
+        // window reserved rather than it drifting with how many are left to place.
         var free = new List<int>();
-        for (int row = 0; row < PreferredRows && free.Count < missing.Count; row++)
-            for (int i = row * RowSize + RowSize - 3; i < (row + 1) * RowSize; i++)
-                if (IsEmpty(settings, i))
-                    free.Add(i);
+        int windowEnd = (TargetRow + 1) * RowSize;
+        int windowStart = windowEnd - Abilities.BarPlaced.Length;
+        for (int i = windowStart; i < windowEnd && free.Count < missing.Count; i++)
+            if (IsEmpty(settings, i))
+                free.Add(i);
         for (int i = 0; free.Count < missing.Count && i < 100; i++)
             if (!free.Contains(i) && IsEmpty(settings, i))
                 free.Add(i);
