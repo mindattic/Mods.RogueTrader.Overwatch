@@ -122,3 +122,4 @@ _Nothing recorded yet._
 | RTO-T99 | 2026-10-31 | chore | closed | Add 20261029174655_1.jpg, 20261029174700_1.jpg, 20261029174711_1.jpg, 20261029174715_1.jpg, 20261029174836_1.jpg, 20261029174845_1.jpg, 20261029174849_1.jpg | — |
 | RTO-T100 | 2026-11-01 | chore | closed | Rename repo to Mods.RogueTrader.Overwatch for mod organization (GitHub + folder + refs) | 3299d214639575f2d3570e103beac6af47a32f0c |
 | RTO-T104 | 2026-11-04 | fix | closed | Vortex deploy drops the empty Bundles folder again, so blueprints silently fail to load (regression on RTO-T22) | dad9a6e |
+| RTO-T105 | 2026-11-04 | fix | closed | Suppression desyncs (reported 2026-11-04): investigate and fix | 05fe06e |
