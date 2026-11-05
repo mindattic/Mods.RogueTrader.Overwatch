@@ -129,7 +129,7 @@ _Nothing recorded yet._
 | RTO-T106 | 2026-11-04 | fix | open | Overwatch doesn't activate with a sniper rifle equipped (reported 2026-11-04) | — |
 | RTO-T107 | 2026-11-04 | fix | open | Overwatch cone outline should use the same 3D-look lines as Reflex Shot's circle | — |
 | RTO-T108 | 2026-11-05 | chore | closed | Bump to 6.0.0 and rebuild dist zip (user request 2026-11-05) | d561deb |
-| RTO-T109 | 2026-11-05 | feature | open | Add Hustle: once-per-battle move ability, range = distance to furthest party member | — |
-| RTO-T110 | 2026-11-05 | feature | open | Add HunkDown: skip next turn, regenerate HP by cover type at the end, boosted Deflection while active | — |
+| RTO-T109 | 2026-11-05 | feature | closed | Add Hustle: once-per-battle move ability, range = distance to furthest party member | e039ba0 |
+| RTO-T110 | 2026-11-05 | feature | open | Add Hunker Down: skip next turn, regenerate HP by cover type at the end, boosted Deflection while active | — |
 | RTO-T111 | 2026-11-05 | feature | open | Reflex Shot fires immediately at end of turn, at a random target in range, instead of waiting as an aimed-facing reaction | — |
-| RTO-T112 | 2026-11-05 | feature | open | Move all granted-to-party abilities to the end of the 2nd action bar row | — |
+| RTO-T112 | 2026-11-05 | feature | closed | Move all granted-to-party abilities to the end of the 2nd action bar row | e039ba0 |
