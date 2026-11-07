@@ -133,3 +133,4 @@ _Nothing recorded yet._
 | RTO-T110 | 2026-11-05 | feature | open | Add Hunker Down: skip next turn, regenerate HP by cover type at the end, boosted Deflection while active | — |
 | RTO-T111 | 2026-11-05 | feature | closed | Reflex Shot fires immediately at end of turn, at a random target in range, instead of waiting as an aimed-facing reaction | 897233d |
 | RTO-T112 | 2026-11-05 | feature | closed | Move all granted-to-party abilities to the end of the 2nd action bar row | e039ba0 |
+| RTO-T113 | 2026-11-06 | feature | open | Add .github/workflows/publish.yml using Nexus-Mods/upload-action to push a new file version to the mod's Nexus page on release, plus nexus.json config for the local /publish fallback | — |
