@@ -136,4 +136,4 @@ _Nothing recorded yet._
 | RTO-T113 | 2026-11-06 | feature | closed | Add .github/workflows/publish.yml using Nexus-Mods/upload-action to push a new file version to the mod's Nexus page on release, plus nexus.json config for the local /publish fallback | 8af0aa2 |
 | RTO-T114 | 2026-11-06 | chore | closed | Set NEXUSMODS_API_KEY GitHub secret for publish workflow | — |
 | RTO-T115 | 2026-11-06 | chore | closed | Set real Nexus modId (677) and fileId (2710) in nexus.json | 1fd5047 |
-| RTO-T116 | 2026-11-06 | chore | open | Seed .publish-state.json baseline for /publish no-op guard | — |
+| RTO-T116 | 2026-11-06 | chore | closed | Seed .publish-state.json baseline for /publish no-op guard | a1689e9 |
