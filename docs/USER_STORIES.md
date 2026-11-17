@@ -121,7 +121,7 @@ _Nothing recorded yet._
 | RTO-T98 | 2026-10-31 | chore | closed | Bump to 4.0.0: version manifest, README Status/changelog, Nexus page version/changelog/description/checklist, matching the mechanics shipped since 3.0.0 (T93, T94, T96) | mod/OwlcatModificationManifest.json, README.md, docs/NEXUS_PAGE.md: version 4.0.0, fresh changelog for T93/T94/T96, fixed stale checklist/BBCode lines claiming Reflex Shot isn't an attack of opportunity or still uses a flat 33 base |
 | RTO-T99 | 2026-10-31 | chore | closed | Add 20261029174655_1.jpg, 20261029174700_1.jpg, 20261029174711_1.jpg, 20261029174715_1.jpg, 20261029174836_1.jpg, 20261029174845_1.jpg, 20261029174849_1.jpg | — |
 | RTO-T100 | 2026-11-01 | chore | closed | Rename repo to Mods.RogueTrader.Overwatch for mod organization (GitHub + folder + refs) | 3299d214639575f2d3570e103beac6af47a32f0c |
-| RTO-T101 | 2026-11-02 | docs | open | Adopt MindAttic.Agency docs-site pipeline, publish README to GitHub Pages (HOUSE-LAW-14) | — |
+| RTO-T101 | 2026-11-02 | docs | closed | Adopt MindAttic.Agency docs-site pipeline, publish README to GitHub Pages (HOUSE-LAW-14) | — |
 | RTO-T102 | 2026-11-02 | fix | closed | Bughunt sweep, two passes: find and fix real bugs across tracked source (user request 2026-11-02) | — |
 | RTO-T103 | 2026-11-02 | fix | closed | Fix the open items the 2026-11-02 bughunt left for decision (manifest Repository link) | — |
 | RTO-T104 | 2026-11-04 | fix | closed | Vortex deploy drops the empty Bundles folder again, so blueprints silently fail to load (regression on RTO-T22) | dad9a6e |
@@ -137,3 +137,5 @@ _Nothing recorded yet._
 | RTO-T114 | 2026-11-06 | chore | closed | Set NEXUSMODS_API_KEY GitHub secret for publish workflow | — |
 | RTO-T115 | 2026-11-06 | chore | closed | Set real Nexus modId (677) and fileId (2710) in nexus.json | 1fd5047 |
 | RTO-T116 | 2026-11-06 | chore | closed | Seed .publish-state.json baseline for /publish no-op guard | a1689e9 |
+| RTO-T117 | 2026-11-10 | chore | closed | Adopt the shared docs-site pipeline: turn on GitHub Pages | — |
+| RTO-T118 | 2026-11-17 | docs | closed | Update USER_STORIES.md | — |
